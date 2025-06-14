@@ -9,250 +9,244 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
         }
         .accordion-content {
-            max-height: 0;
+            max-height: 1000px; /* Expanded by default */
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.3s ease-in-out;
         }
-        .accordion-button svg.arrow {
+        .accordion-content.collapsed {
+             max-height: 0;
+        }
+        .accordion-button .arrow {
             transition: transform 0.2s ease-in-out;
+            transform: rotate(90deg); /* Expanded by default */
         }
-        .accordion-button[aria-expanded="true"] svg.arrow {
-            transform: rotate(90deg);
+        .accordion-button.collapsed .arrow {
+            transform: rotate(0deg);
         }
         .modal {
             transition: opacity 0.2s ease-in-out;
         }
-        .prose ul {
-            padding-left: 1.25rem;
-        }
-        .prose ul > li {
-            margin-top: 0.25rem;
-        }
+        .prose ul { padding-left: 1.25rem; }
+        .prose ul > li { margin-top: 0.25rem; }
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #print-area, #print-area * {
-                visibility: visible;
-            }
-            #print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
+            body > *:not(#print-area) { display: none !important; }
+            #print-area { display: block !important; }
         }
     </style>
 </head>
 <body class="bg-gray-100">
 
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
-            <h1 class="text-3xl font-bold text-gray-800 mb-2">The Superior Tax Calculator</h1>
-            <p class="text-gray-600 mb-6">Estimate your 2025 tax outcome with detailed breakdowns, offsets, and more.</p>
-
-            <!-- Main Form -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                <!-- Left Column -->
-                <div>
-                    <!-- Income & User Details -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Your Details & Income</h3>
-                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Residency Status</label>
-                            <div class="relative flex items-start">
-                                <div class="flex items-center h-5"><input id="residencyStatus" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"></div>
-                                <div class="ml-3 text-sm"><label for="residencyStatus" class="font-medium text-gray-700">I am a temporary resident</label><p class="text-gray-500">Select if you are not eligible for Medicare.</p></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="occupation" class="block text-sm font-medium text-gray-700">Occupation</label>
-                            <select id="occupation" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"><option>Select your occupation</option></select>
-                        </div>
-
-                        <!-- Main Income Types -->
-                        <div class="mb-4 p-4 border border-gray-200 rounded-lg">
-                            <h4 class="font-semibold text-gray-700 mb-2">Primary Income</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Gross Annual Salary</label><input type="number" id="grossSalary" class="income-input w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
-                                <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Bank Interest</label><input type="number" id="bankInterest" class="income-input w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
-                                <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Dividends (Unfranked)</label><input type="number" id="dividendsUnfranked" class="income-input w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
-                                <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Dividends (Franked)</label><input type="number" id="dividendsFranked" class="income-input w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
-                                <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Franking Credits</label><input type="number" id="frankingCredits" class="income-input w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
-                            </div>
-                        </div>
-
-                        <!-- Business Income Section -->
-                        <div class="mb-4 p-4 border border-gray-200 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-semibold text-gray-700">Business Income / Loss</h4>
-                                <button id="add-business-btn" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">+ Add Business</button>
-                            </div>
-                            <div id="business-summary-list" class="space-y-2"></div>
-                        </div>
-
-                        <!-- Rental Properties Section -->
-                        <div class="mb-4 p-4 border border-gray-200 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-semibold text-gray-700">Rental Properties</h4>
-                                <button id="add-rental-btn" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">+ Add Property</button>
-                            </div>
-                            <div id="rental-summary-list" class="space-y-2"></div>
-                        </div>
-                        
-                        <!-- Capital Gains Section -->
-                        <div class="p-4 border border-gray-200 rounded-lg">
-                             <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-semibold text-gray-700">Capital Gains</h4>
-                                <button id="add-cgt-btn" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">+ Add CGT Event</button>
-                            </div>
-                            <div id="cgt-summary-list" class="space-y-2"></div>
-                        </div>
-
-
-                        <div class="mt-4">
-                            <label for="paygWithheld" class="block text-sm font-medium text-gray-700">PAYG Withheld</label>
-                            <input type="number" id="paygWithheld" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 18000">
-                        </div>
+    <div id="main-app" class="min-h-screen lg:flex">
+        <!-- Sidebar Navigation -->
+        <nav class="bg-white lg:w-64 flex-shrink-0 border-r border-gray-200">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-indigo-600">Tax Calculator</h1>
+                <p class="text-xs text-gray-500">2025 Financial Year</p>
+            </div>
+            <ul class="flex lg:flex-col p-4 lg:p-2 space-x-2 lg:space-x-0 lg:space-y-1">
+                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active" data-page="main">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Main Details
+                </a></li>
+                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="schedules">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
+                    Schedules
+                </a></li>
+                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="deductions">
+                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
+                    Deductions
+                </a></li>
+                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="report">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Calculate & Report
+                </a></li>
+            </ul>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="flex-1 p-6 lg:p-10 overflow-y-auto">
+            <main>
+                <!-- Page: Main Details -->
+                <div id="page-main" class="page active">
+                     <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800">Main Details</h2>
+                        <p class="text-gray-500">Start by entering your personal and primary income details.</p>
                     </div>
-
-                    <!-- Occupation Specific Suggestions -->
-                    <div id="occupationSuggestions" class="mt-6" style="display: none;">
-                         <h3 class="text-lg font-medium text-gray-900 mb-2">Common Deductions for Your Occupation</h3>
-                         <div id="occupationSuggestionsContainer" class="space-y-3 bg-indigo-50 p-4 rounded-lg"></div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Left Column -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Your Details</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label for="occupation" class="block text-sm font-medium text-gray-700">Occupation</label>
+                                        <select id="occupation" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"><option>Select your occupation</option></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Residency Status</label>
+                                        <div class="relative flex items-start"><div class="flex items-center h-5"><input id="residencyStatus" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"></div><div class="ml-3 text-sm"><label for="residencyStatus" class="font-medium text-gray-700">I am a temporary resident</label><p class="text-gray-500">Select if you are not eligible for Medicare.</p></div></div>
+                                    </div>
+                                    <div>
+                                        <label for="dependentChildren" class="block text-sm font-medium text-gray-700">Number of dependent children</label>
+                                        <input type="number" id="dependentChildren" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="0">
+                                    </div>
+                                    <div>
+                                        <label for="helpDebt" class="block text-sm font-medium text-gray-700">Outstanding HELP/HECS Debt</label>
+                                        <input type="number" id="helpDebt" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="$0.00">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Medicare Levy Surcharge</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <label for="privateHealthCover" class="text-sm font-medium text-gray-700">Appropriate private hospital cover?</label>
+                                        <input id="privateHealthCover" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                    </div>
+                                    <div>
+                                        <label for="spouseIncome" class="block text-sm font-medium text-gray-700">Spouse's Income (for MLS)</label>
+                                        <input type="number" id="spouseIncome" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="$0.00">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Income & PAYG</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Gross Annual Salary</label><input type="number" id="grossSalary" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Bank Interest</label><input type="number" id="bankInterest" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Dividends (Unfranked)</label><input type="number" id="dividendsUnfranked" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Dividends (Franked)</label><input type="number" id="dividendsFranked" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Franking Credits</label><input type="number" id="frankingCredits" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t">
+                                    <label for="paygWithheld" class="block text-sm font-medium text-gray-700">PAYG Withheld</label>
+                                    <input type="number" id="paygWithheld" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 18000">
+                                </div>
+                            </div>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border">
+                                <h3 class="text-lg font-semibold text-gray-800 mb-4">Offsets</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Private Health Insurance Premium Paid</label><input type="number" id="phiPremium" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                    <div class="flex justify-between items-center"><label class="text-sm text-gray-700">Spouse Super Contribution</label><input type="number" id="spouseSuperContribution" class="w-32 text-right bg-gray-50 rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Right Column -->
-                <div>
-                     <!-- Medicare & Offsets Section -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Medicare & Tax Offsets</h3>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Do you have appropriate private hospital cover?</label>
-                             <input id="privateHealthCover" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                <!-- Page: Schedules -->
+                <div id="page-schedules" class="page">
+                     <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Schedules</h2><p class="text-gray-500">Add details for any business, rental, or capital gains activities.</p></div>
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <div class="flex justify-between items-center mb-2"><h4 class="font-semibold text-gray-700">Business Income/Loss</h4><button id="add-business-btn" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">+ Add Business</button></div>
+                            <div id="business-summary-list" class="space-y-2"></div>
                         </div>
-                        <div class="mb-4">
-                            <label for="spouseIncome" class="block text-sm font-medium text-gray-700">Spouse's Income (for MLS)</label>
-                            <input type="number" id="spouseIncome" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="$0.00">
+                        <div class="bg-white p-4 rounded-lg shadow-sm border">
+                            <div class="flex justify-between items-center mb-2"><h4 class="font-semibold text-gray-700">Rental Properties</h4><button id="add-rental-btn" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">+ Add Property</button></div>
+                            <div id="rental-summary-list" class="space-y-2"></div>
                         </div>
-                        <div class="mb-4">
-                            <label for="dependentChildren" class="block text-sm font-medium text-gray-700">Number of dependent children (for MLS)</label>
-                            <input type="number" id="dependentChildren" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="0">
-                        </div>
-                        <div class="mb-4">
-                            <label for="helpDebt" class="block text-sm font-medium text-gray-700">Outstanding HELP/HECS Debt</label>
-                            <input type="number" id="helpDebt" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="$0.00">
-                        </div>
-                        <div class="p-4 border border-gray-200 rounded-lg">
-                             <h4 class="font-semibold text-gray-700 mb-2">Offsets</h4>
-                             <div class="space-y-3">
-                                 <div class="flex justify-between items-center">
-                                    <label class="text-sm text-gray-700">Private Health Insurance Premium Paid</label>
-                                    <input type="number" id="phiPremium" class="w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00">
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <label class="text-sm text-gray-700">Spouse Super Contribution</label>
-                                    <input type="number" id="spouseSuperContribution" class="w-32 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00">
-                                </div>
-                             </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border">
+                             <div class="flex justify-between items-center mb-2"><h4 class="font-semibold text-gray-700">Capital Gains</h4><button id="add-cgt-btn" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">+ Add CGT Event</button></div>
+                            <div id="cgt-summary-list" class="space-y-2"></div>
                         </div>
                     </div>
-
-
-                    <!-- Standard Deductions Accordion -->
-                    <div class="mt-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Work-Related Deductions (D1-D10)</h3>
+                </div>
+                
+                <!-- Page: Deductions -->
+                <div id="page-deductions" class="page">
+                    <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Deductions</h2><p class="text-gray-500">Enter your work-related and other deductions.</p></div>
+                     <div id="occupationSuggestions" class="mb-6" style="display: none;">
+                         <h3 class="text-xl font-semibold text-gray-800 mb-4">Occupation Specific Deductions</h3>
+                         <div id="occupationSuggestionsContainer" class="space-y-3 bg-indigo-50 p-4 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Other Work-Related Deductions</h3>
                         <div id="deductionsAccordion" class="space-y-2"></div>
                     </div>
                 </div>
-            </div>
 
-             <!-- Calculate & Print Buttons -->
-             <div class="mt-8 text-center space-x-4">
-                <button id="calculateBtn" class="w-full sm:w-auto bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Calculate</button>
-                <button id="printBtn" class="w-full sm:w-auto bg-gray-600 text-white px-8 py-3 rounded-md hover:bg-gray-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105" style="display: none;">Print Report</button>
-            </div>
-
-
-            <!-- Results -->
-            <div id="results-container" class="mt-8 pt-6 border-t border-gray-200" style="display: none;">
-                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Estimated Tax Outcome</h2>
-                <div class="bg-gray-50 p-6 rounded-lg">
-                    <div id="results-breakdown" class="grid grid-cols-2 gap-x-8 gap-y-4">
-                        <!-- Results breakdown will be injected here -->
+                <!-- Page: Report -->
+                <div id="page-report" class="page">
+                     <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Calculate & Report</h2><p class="text-gray-500">Review your final estimated tax outcome.</p></div>
+                     <div id="calculate-section" class="flex justify-center items-center flex-col bg-white p-8 rounded-lg shadow-sm border">
+                        <p class="text-lg text-gray-700 mb-4">You have entered all your details. Ready to see the results?</p>
+                        <button id="calculateBtn" class="w-full sm:w-auto bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Calculate My Tax Outcome</button>
+                    </div>
+                    <div id="results-container" class="mt-8 pt-8 border-t border-gray-200" style="display: none;">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Estimated Tax Outcome</h3>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <div id="results-breakdown" class="grid grid-cols-2 gap-x-8 gap-y-4"></div>
+                        </div>
+                        <div id="finalResult" class="md:col-span-2 mt-4 p-6 rounded-lg text-white text-center"></div>
+                        <div class="text-center mt-6">
+                           <button id="printBtn" class="w-full sm:w-auto bg-gray-600 text-white px-8 py-3 rounded-md hover:bg-gray-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Print Report</button>
+                        </div>
                     </div>
                 </div>
-
-                <div id="finalResult" class="md:col-span-2 mt-4 p-6 rounded-lg text-white text-center">
-                    <p id="resultText" class="text-xl font-bold"></p>
-                    <p id="resultAmount" class="text-4xl font-extrabold"></p>
-                </div>
-            </div>
+            </main>
         </div>
     </div>
     
-    <!-- Modals (Hidden by default) -->
+    <!-- Modals -->
     <div id="info-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50"></div>
     <div id="rental-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50"></div>
     <div id="cgt-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50"></div>
     <div id="business-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50"></div>
-
-    <!-- Print Area -->
     <div id="print-area" class="hidden"></div>
 
 
     <script>
-        // --- SCRIPT START --- //
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- DATA STORE --- //
-            let rentalProperties = [];
-            let cgtEvents = [];
-            let businesses = [];
-            
-            // --- CONSTANTS & CONFIG --- //
-            const occupations = ["Teachers and education professionals", "Nurses and midwives", "IT professionals", "Tradesperson", "Adult industry workers", "Agricultural workers", "Apprentices and trainees", "Australian Defence Force members","Building and construction employees", "Bus drivers", "Call centre operators", "Cleaners","Community support workers and direct carers", "Doctor, specialist or other medical professional","Engineers", "Factory workers", "Fire fighters", "Fitness and sporting industry employees", "Flight crew","Gaming attendants", "Guards and security employees", "Hairdressers and beauty professionals","Hospitality industry employees", "Lawyers", "Meat workers", "Media professionals","Mining site employees", "Office workers", "Paramedics", "Performing artists", "Pilots","Police", "Professional sportsperson", "Real estate employees", "Recruitment consultants", "Retail industry workers","Sales and marketing", "Train drivers", "Travel agent employees","Truck drivers"];
-            const occupationSuggestions = {"Teachers and education professionals": ["Teaching registration renewal", "Teaching aids & supplies", "Student excursions & school trips", "Professional publications/journals"],"Nurses and midwives": ["AHPRA/NMBA registration renewal", "Fob watch", "Stethoscope", "Non-slip shoes", "Professional publications"],"IT professionals": ["Home internet (work portion)", "Mobile phone (work portion)", "Software subscriptions", "Cyber-security software", "Industry certifications"],"Tradesperson": ["Tool insurance", "Licences & permits (forklift, etc)", "Protective sunglasses/sunscreen", "Heavy-duty work gloves"],"Building and construction employees": ["Tool insurance", "High-vis workwear", "Steel-cap boots", "Sunscreen and sunglasses", "Vehicle travel between sites"],"Hospitality industry employees": ["RSA/RCG course/renewal", "Knives or other tools", "Non-slip shoes", "Grooming expenses (if specific look is required)"],"Retail industry workers": ["Parking fees (if travelling between stores)", "Stationery (if required to buy your own)", "Use of own phone for work"],"Truck drivers": ["Log book", "Specific licence renewals (e.g. heavy vehicle)", "Overnight meal expenses (if allowance paid)", "Cabin items (fridge, etc.)"],"Office workers": ["Home office running expenses (if WFH)", "Professional subscriptions/memberships", "Work-related phone call costs", "Work-related internet usage"],"Hairdressers and beauty professionals": ["Scissors and clippers", "Brushes and combs", "Industry magazines and subscriptions", "Training courses & seminars"],"Fitness and sporting industry employees": ["First aid certificate renewal", "Fitness qualification/CPD courses", "Music subscriptions for classes", "Protective equipment (e.g. focus pads, gloves)"],"Lawyers": ["Practising certificate renewal", "Law society membership", "Legal robes and wigs", "Legal research subscriptions", "Court filing fees (if not reimbursed)"],"Police": ["Physical fitness expenses (in some cases)", "Ammunition (for practice, if required)", "Torches and batteries", "Off-duty training courses"],"Doctor, specialist or other medical professional": ["AHPRA registration renewal", "Medical indemnity insurance", "Medical equipment & instruments", "Subscriptions to medical journals", "Conference & seminar costs"]};
-            const deductionBreakdowns = {"D1": {label: "Work-related car expenses",type: "choice",name: "d1_method",methods: {"cents_per_km": {label: "Cents per km method",items: ["Work-related kms (88c/km, max 5,000km)"]},"logbook": {label: "Logbook method",items: ["Fuel and oil", "Repairs and servicing", "Registration", "Insurance", "Loan interest", "Depreciation", "EV home charging (4.2c/km)"]}}},"D2": { type: "simple", label: "Work-related travel expenses", items: ["Flights / public transport fares", "Taxis and ride-sharing", "Accommodation", "Overnight meals & incidentals", "Tolls and parking (work-related)", "Short-term car hire"] },"D3": { type: "simple", label: "Clothing & laundry expenses", items: ["Compulsory uniform costs", "Occupation-specific clothing", "Protective clothing (e.g. hi-vis, safety boots)", "Laundry ($1 per load - work only)", "Dry-cleaning"] },"D4": { type: "simple", label: "Self-education expenses", items: ["Course or tuition fees (excl. HECS)", "Textbooks and stationery", "Student union / amenities fees", "Computer depreciation (work %)", "Professional library/journals"] },"D5": {label: "Other work-related expenses",type: "choice",name: "d5_method",methods: {"fixed_rate_wfh": {label: "WFH Fixed Rate Method",items: ["Hours worked from home (70c per hour)"],note: "Note: Claiming the fixed rate covers phone, internet, stationery, and energy. These cannot be claimed separately."},"actual_costs": {label: "Actual Costs Method",items: ["Union / Professional association fees", "Work-related phone expenses (%)", "Work-related internet expenses (%)", "Stationery & computer consumables", "Tools & equipment (<$300)", "Depreciation of tools/equipment (>$300)", "Protective equipment (glasses, hard hats)"]}}},"D9": { type: "simple", label: "Gifts or donations", items: ["Donations to registered DGRs ($2+)", "Political party contributions (max $1,500)", "Bucket donations (max $10 without receipt)"] },"D10": { type: "simple", label: "Cost of managing tax affairs", items: ["Tax agent fees", "Interest charged by ATO (GIC/SIC)", "Travel to see tax agent", "Litigation costs"] }};
-            const deductionDescriptions = {"D1": {title: "About D1: Work-related car expenses",content: `<p class="mb-2">You can claim expenses for a car you own, lease, or hire when you use it for work.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Travel between two separate workplaces (e.g., from your first job to your second job).</li><li>Travel from your regular workplace to an alternative workplace (e.g., a client's office).</li><li>Travel if your home is a base of employment or if you have shifting places of work (common for tradies).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of normal daily trips between your home and regular place of work, even if you do minor tasks on the way or work outside normal hours.</li><li>Expenses where you have been reimbursed by your employer.</li></ul>`},"D2": {title: "About D2: Work-related travel expenses",content: `<p class="mb-2">This relates to travel expenses you incur in the course of performing your work duties, especially when it requires an overnight stay away from home.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Accommodation, meals, and incidental expenses when travelling overnight for work.</li><li>Air, bus, train, and taxi/ride-share fares.</li><li>Bridge and road tolls, and parking fees related to work travel.</li><li>Expenses for using a vehicle that isn't considered a 'car' (e.g., ute with >1 tonne capacity).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of meals if your travel did not involve an overnight stay.</li><li>Any expenses for which you were reimbursed by your employer.</li></ul>`},"D3": {title: "About D3: Clothing & laundry expenses",content: `<p class="mb-2">You can claim expenses for clothing that is specific to your work and not conventional in nature.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li><b>Compulsory uniforms:</b> Must be unique and distinctive to your employer (e.g., has a logo) and part of a strictly enforced policy.</li><li><b>Occupation-specific clothing:</b> Items that allow the public to recognise your occupation (e.g., a chef's chequered pants).</li><li><b>Protective clothing:</b> Items that protect you from illness or injury at work, like steel-capped boots, high-vis vests, and non-slip shoes.</li><li>The cost of laundering these specific items.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of plain or conventional clothing, even if your employer requires you to wear it (e.g., a black suit, white shirt).</li></ul>`},"D4": {title: "About D4: Self-education expenses",content: `<p class="mb-2">You can claim expenses for a course or study that has a direct connection to your current employment.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim if the course:</h4><ul class="list-disc list-inside space-y-1"><li>Maintains or improves the specific skills and knowledge you need for your current job.</li><li>Is likely to lead to an increase in income from your current job.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>Expenses for a course that is only generally related to your employment.</li><li>Expenses for a course that will enable you to get a new job or change professions.</li><li>Repayments for HECS-HELP, FEE-HELP, VET student loans.</li></ul>`},"D5": {title: "About D5: Other work-related expenses",content: `<p class="mb-2">This is a broad category for work expenses that don't fit into D1-D4.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Union and professional association fees.</li><li>Technical or professional publications.</li><li>The cost of tools and equipment (immediate deduction if under $300, depreciation if over).</li><li>The work-related portion of phone and internet usage (if using Actual Costs method).</li><li>The work-related portion of home office energy and stationery (if using Actual Costs method).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">Key Rule for Working From Home (WFH):</h4><p>If you use the <b>Fixed Rate Method</b> (70c per hour), this rate covers all your additional running expenses including electricity, gas, phone, internet, and stationery. You <b>cannot</b> claim these items separately. You can still claim depreciation on office furniture and equipment.</p>`},"D9": {title: "About D9: Gifts or donations",content: `<p class="mb-2">You can claim a deduction for gifts or donations to organisations that are endorsed as deductible gift recipients (DGRs).</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Gifts of $2 or more made to a DGR.</li><li>Donations made through workplace giving programs.</li><li>Contributions to registered political parties (up to $1,500).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim donations if you receive a material benefit in return, such as:</h4><ul class="list-disc list-inside space-y-1"><li>Raffle or art union tickets.</li><li>The cost of attending fundraising dinners.</li><li>Items with an advertised value (e.g., chocolates, pens).</li></ul>`},"D10": {title: "About D10: Cost of managing tax affairs",content: `<p class="mb-2">You can claim expenses incurred in managing your own tax affairs.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Fees paid to a registered tax agent for preparing and lodging your tax return.</li><li>Costs of travelling to see your tax agent.</li><li>Interest charged by the ATO (General Interest Charge or Shortfall Interest Charge).</li><li>Costs of tax-related books or software.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>Fees paid for general financial advice.</li><li>ATO penalties.</li></ul>`}};
+            let taxData = { schedules: { businesses: [], rentalProperties: [], cgtEvents: [] } };
+            const occupations = ["Teachers and education professionals", "Nurses and midwives", "IT professionals", "Tradesperson", "Adult industry workers", "Agricultural workers", "Apprentices and trainees", "Australian Defence Force members", "Building and construction employees", "Bus drivers", "Call centre operators", "Cleaners", "Community support workers and direct carers", "Doctor, specialist or other medical professional", "Engineers", "Factory workers", "Fire fighters", "Fitness and sporting industry employees", "Flight crew", "Gaming attendants", "Guards and security employees", "Hairdressers and beauty professionals", "Hospitality industry employees", "Lawyers", "Meat workers", "Media professionals", "Mining site employees", "Office workers", "Paramedics", "Performing artists", "Pilots", "Police", "Professional sportsperson", "Real estate employees", "Recruitment consultants", "Retail industry workers", "Sales and marketing", "Train drivers", "Travel agent employees", "Truck drivers"];
+            const occupationSuggestions = { "Teachers and education professionals": ["Teaching registration renewal", "Teaching aids & supplies", "Student excursions & school trips", "Professional publications/journals"], "Nurses and midwives": ["AHPRA/NMBA registration renewal", "Fob watch", "Stethoscope", "Non-slip shoes", "Professional publications"], "IT professionals": ["Home internet (work portion)", "Mobile phone (work portion)", "Software subscriptions", "Cyber-security software", "Industry certifications"], "Tradesperson": ["Tool insurance", "Licences & permits (forklift, etc)", "Protective sunglasses/sunscreen", "Heavy-duty work gloves"], "Building and construction employees": ["Tool insurance", "High-vis workwear", "Steel-cap boots", "Sunscreen and sunglasses", "Vehicle travel between sites"], "Hospitality industry employees": ["RSA/RCG course/renewal", "Knives or other tools", "Non-slip shoes", "Grooming expenses (if specific look is required)"], "Retail industry workers": ["Parking fees (if travelling between stores)", "Stationery (if required to buy your own)", "Use of own phone for work"], "Truck drivers": ["Log book", "Specific licence renewals (e.g. heavy vehicle)", "Overnight meal expenses (if allowance paid)", "Cabin items (fridge, etc.)"], "Office workers": ["Home office running expenses (if WFH)", "Professional subscriptions/memberships", "Work-related phone call costs", "Work-related internet usage"], "Hairdressers and beauty professionals": ["Scissors and clippers", "Brushes and combs", "Industry magazines and subscriptions", "Training courses & seminars"], "Fitness and sporting industry employees": ["First aid certificate renewal", "Fitness qualification/CPD courses", "Music subscriptions for classes", "Protective equipment (e.g. focus pads, gloves)"], "Lawyers": ["Practising certificate renewal", "Law society membership", "Legal robes and wigs", "Legal research subscriptions", "Court filing fees (if not reimbursed)"], "Police": ["Physical fitness expenses (in some cases)", "Ammunition (for practice, if required)", "Torches and batteries", "Off-duty training courses"], "Doctor, specialist or other medical professional": ["AHPRA registration renewal", "Medical indemnity insurance", "Medical equipment & instruments", "Subscriptions to medical journals", "Conference & seminar costs"] };
+            const deductionBreakdowns = { "D1": { label: "Work-related car expenses", type: "choice", name: "d1_method", methods: { "cents_per_km": { label: "Cents per km method", items: ["Work-related kms (88c/km, max 5,000km)"] }, "logbook": { label: "Logbook method", items: ["Fuel and oil", "Repairs and servicing", "Registration", "Insurance", "Loan interest", "Depreciation", "EV home charging (4.2c/km)"] } } }, "D2": { type: "simple", label: "Work-related travel expenses", items: ["Flights / public transport fares", "Taxis and ride-sharing", "Accommodation", "Overnight meals & incidentals", "Tolls and parking (work-related)", "Short-term car hire"] }, "D3": { type: "simple", label: "Clothing & laundry expenses", items: ["Compulsory uniform costs", "Occupation-specific clothing", "Protective clothing (e.g. hi-vis, safety boots)", "Laundry ($1 per load - work only)", "Dry-cleaning"] }, "D4": { type: "simple", label: "Self-education expenses", items: ["Course or tuition fees (excl. HECS)", "Textbooks and stationery", "Student union / amenities fees", "Computer depreciation (work %)", "Professional library/journals"] }, "D5": { label: "Other work-related expenses", type: "choice", name: "d5_method", methods: { "fixed_rate_wfh": { label: "WFH Fixed Rate Method", items: ["Hours worked from home (70c per hour)"], note: "Note: Claiming the fixed rate covers phone, internet, stationery, and energy. These cannot be claimed separately." }, "actual_costs": { label: "Actual Costs Method", items: ["Union / Professional association fees", "Work-related phone expenses (%)", "Work-related internet expenses (%)", "Stationery & computer consumables", "Tools & equipment (<$300)", "Depreciation of tools/equipment (>$300)", "Protective equipment (glasses, hard hats)"] } } }, "D9": { type: "simple", label: "Gifts or donations", items: ["Donations to registered DGRs ($2+)", "Political party contributions (max $1,500)", "Bucket donations (max $10 without receipt)"] }, "D10": { type: "simple", label: "Cost of managing tax affairs", items: ["Tax agent fees", "Interest charged by ATO (GIC/SIC)", "Travel to see tax agent", "Litigation costs"] } };
+            const deductionDescriptions = { "D1": { title: "About D1: Work-related car expenses", content: `<p class="mb-2">You can claim expenses for a car you own, lease, or hire when you use it for work.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Travel between two separate workplaces (e.g., from your first job to your second job).</li><li>Travel from your regular workplace to an alternative workplace (e.g., a client's office).</li><li>Travel if your home is a base of employment or if you have shifting places of work (common for tradies).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of normal daily trips between your home and regular place of work, even if you do minor tasks on the way or work outside normal hours.</li><li>Expenses where you have been reimbursed by your employer.</li></ul>` }, "D2": { title: "About D2: Work-related travel expenses", content: `<p class="mb-2">This relates to travel expenses you incur in the course of performing your work duties, especially when it requires an overnight stay away from home.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Accommodation, meals, and incidental expenses when travelling overnight for work.</li><li>Air, bus, train, and taxi/ride-share fares.</li><li>Bridge and road tolls, and parking fees related to work travel.</li><li>Expenses for using a vehicle that isn't considered a 'car' (e.g., ute with >1 tonne capacity).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of meals if your travel did not involve an overnight stay.</li><li>Any expenses for which you were reimbursed by your employer.</li></ul>` }, "D3": { title: "About D3: Clothing & laundry expenses", content: `<p class="mb-2">You can claim expenses for clothing that is specific to your work and not conventional in nature.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li><b>Compulsory uniforms:</b> Must be unique and distinctive to your employer (e.g., has a logo) and part of a strictly enforced policy.</li><li><b>Occupation-specific clothing:</b> Items that allow the public to recognise your occupation (e.g., a chef's chequered pants).</li><li><b>Protective clothing:</b> Items that protect you from illness or injury at work, like steel-capped boots, high-vis vests, and non-slip shoes.</li><li>The cost of laundering these specific items.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of plain or conventional clothing, even if your employer requires you to wear it (e.g., a black suit, white shirt).</li></ul>` }, "D4": { title: "About D4: Self-education expenses", content: `<p class="mb-2">You can claim expenses for a course or study that has a direct connection to your current employment.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim if the course:</h4><ul class="list-disc list-inside space-y-1"><li>Maintains or improves the specific skills and knowledge you need for your current job.</li><li>Is likely to lead to an increase in income from your current job.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>Expenses for a course that is only generally related to your employment.</li><li>Expenses for a course that will enable you to get a new job or change professions.</li><li>Repayments for HECS-HELP, FEE-HELP, VET student loans.</li></ul>` }, "D5": { title: "About D5: Other work-related expenses", content: `<p class="mb-2">This is a broad category for work expenses that don't fit into D1-D4.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Union and professional association fees.</li><li>Technical or professional publications.</li><li>The cost of tools and equipment (immediate deduction if under $300, depreciation if over).</li><li>The work-related portion of phone and internet usage (if using Actual Costs method).</li><li>The work-related portion of home office energy and stationery (if using Actual Costs method).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">Key Rule for Working From Home (WFH):</h4><p>If you use the <b>Fixed Rate Method</b> (70c per hour), this rate covers all your additional running expenses including electricity, gas, phone, internet, and stationery. You <b>cannot</b> claim these items separately. You can still claim depreciation on office furniture and equipment.</p>` }, "D9": { title: "About D9: Gifts or donations", content: `<p class="mb-2">You can claim a deduction for gifts or donations to organisations that are endorsed as deductible gift recipients (DGRs).</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Gifts of $2 or more made to a DGR.</li><li>Donations made through workplace giving programs.</li><li>Contributions to registered political parties (up to $1,500).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim donations if you receive a material benefit in return, such as:</h4><ul class="list-disc list-inside space-y-1"><li>Raffle or art union tickets.</li><li>The cost of attending fundraising dinners.</li><li>Items with an advertised value (e.g., chocolates, pens).</li></ul>` }, "D10": { title: "About D10: Cost of managing tax affairs", content: `<p class="mb-2">You can claim expenses incurred in managing your own tax affairs.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Fees paid to a registered tax agent for preparing and lodging your tax return.</li><li>Costs of travelling to see your tax agent.</li><li>Interest charged by the ATO (General Interest Charge or Shortfall Interest Charge).</li><li>Costs of tax-related books or software.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>Fees paid for general financial advice.</li><li>ATO penalties.</li></ul>` } };
 
-            // --- UI ELEMENT SELECTORS --- //
-            const occupationSelect = document.getElementById('occupation');
-            const accordionContainer = document.getElementById('deductionsAccordion');
-
-            // --- HELPER FUNCTIONS --- //
             const formatCurrency = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-            // --- INITIALIZATION --- //
             function initialize() {
-                // Populate occupations dropdown
+                const occupationSelect = document.getElementById('occupation');
                 occupations.sort().forEach(occupation => {
                     const option = document.createElement('option');
                     option.value = occupation;
                     option.textContent = occupation;
                     occupationSelect.appendChild(option);
                 });
-
-                // Build main deductions accordion
                 buildDeductionsAccordion();
-
-                // Setup event listeners
                 setupEventListeners();
             }
 
-            // --- UI BUILDERS --- //
             function buildDeductionsAccordion() {
+                const accordionContainer = document.getElementById('deductionsAccordion');
+                accordionContainer.innerHTML = '';
                 for (const key in deductionBreakdowns) {
                     const category = deductionBreakdowns[key];
                     const accordionItem = document.createElement('div');
                     accordionItem.classList.add('border', 'border-gray-200', 'rounded-md');
-
-                    let contentHtml = '';
+                    let contentHtml;
                     if (category.type === 'choice') {
                         let radioButtonsHtml = '';
                         let first = true;
@@ -265,8 +259,7 @@
                     } else {
                         contentHtml = `<div class="space-y-3">${category.items.map(item => `<div class="flex justify-between items-center"><label class="text-sm text-gray-700">${item}</label><input type="number" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>`).join('')}</div>`;
                     }
-
-                    accordionItem.innerHTML = `<button type="button" class="accordion-button w-full flex justify-between items-center p-3 text-left bg-gray-100 hover:bg-gray-200 focus:outline-none" aria-expanded="false"><div class="flex items-center"><span class="font-medium text-gray-800">${key}: ${category.label}</span><button class="info-button ml-2 text-blue-500 hover:text-blue-700" data-key="${key}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></button></div><svg class="w-5 h-5 text-gray-500 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button><div class="accordion-content p-4 bg-white">${contentHtml}</div>`;
+                    accordionItem.innerHTML = `<button type="button" class="accordion-button w-full flex justify-between items-center p-3 text-left bg-gray-100 hover:bg-gray-200 focus:outline-none" aria-expanded="true"><div class="flex items-center"><span class="font-medium text-gray-800">${key}: ${category.label}</span><button class="info-button ml-2 text-blue-500 hover:text-blue-700" data-key="${key}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></button></div><svg class="w-5 h-5 text-gray-500 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button><div class="accordion-content p-4 bg-white">${contentHtml}</div>`;
                     accordionContainer.appendChild(accordionItem);
                 }
             }
@@ -278,83 +271,65 @@
                     const netValue = calculateNet(item);
                     const el = document.createElement('div');
                     el.className = 'flex justify-between items-center bg-white p-2 rounded border';
-                    el.innerHTML = `
-                        <div>
-                            <p class="font-semibold text-sm">${item.name || item.address || item.description}</p>
-                            <p class="text-xs ${netValue >= 0 ? 'text-green-600' : 'text-red-600'}">Net: ${formatCurrency(netValue)}</p>
-                        </div>
-                        <div>
-                            <button class="edit-btn text-xs text-blue-500 hover:text-blue-700 mr-2" data-type="${listId.split('-')[0]}" data-index="${index}">Edit</button>
-                            <button class="delete-btn text-xs text-red-500 hover:text-red-700" data-type="${listId.split('-')[0]}" data-index="${index}">Delete</button>
-                        </div>
-                    `;
+                    el.innerHTML = `<div><p class="font-semibold text-sm">${item.name || item.address || item.description}</p><p class="text-xs ${netValue >= 0 ? 'text-green-600' : 'text-red-600'}">Net: ${formatCurrency(netValue)}</p></div><div><button class="edit-btn text-xs text-blue-500 hover:text-blue-700 mr-2" data-type="${listId.split('-')[0]}" data-index="${index}">Edit</button><button class="delete-btn text-xs text-red-500 hover:text-red-700" data-type="${listId.split('-')[0]}" data-index="${index}">Delete</button></div>`;
                     list.appendChild(el);
                 });
             }
-            const updateRentalList = () => updateSummaryList('rental-summary-list', rentalProperties, prop => prop.income - prop.expenses);
-            const updateCgtList = () => updateSummaryList('cgt-summary-list', cgtEvents, event => (event.proceeds - event.costBase) * (event.discount ? 0.5 : 1));
-            const updateBusinessList = () => updateSummaryList('business-summary-list', businesses, biz => biz.income - biz.cogs - biz.expenses);
+            const updateRentalList = () => updateSummaryList('rental-summary-list', taxData.schedules.rentalProperties, prop => prop.income - prop.expenses);
+            const updateCgtList = () => updateSummaryList('cgt-summary-list', taxData.schedules.cgtEvents, event => (event.proceeds - event.costBase) * (event.discount ? 0.5 : 1));
+            const updateBusinessList = () => updateSummaryList('business-summary-list', taxData.schedules.businesses, biz => biz.income - biz.cogs - biz.expenses);
 
-
-            // --- EVENT LISTENERS --- //
             function setupEventListeners() {
                 document.getElementById('add-rental-btn').addEventListener('click', () => openRentalModal());
                 document.getElementById('add-cgt-btn').addEventListener('click', () => openCgtModal());
                 document.getElementById('add-business-btn').addEventListener('click', () => openBusinessModal());
                 document.getElementById('calculateBtn').addEventListener('click', calculate);
                 document.getElementById('printBtn').addEventListener('click', printReport);
-                occupationSelect.addEventListener('change', handleOccupationChange);
-                setupModalListeners();
-                setupAccordionListeners();
-                setupDynamicListListeners();
-            }
+                document.getElementById('occupation').addEventListener('change', handleOccupationChange);
+                
+                document.querySelector('nav').addEventListener('click', (e) => {
+                    if (e.target.tagName === 'A') {
+                        e.preventDefault();
+                        const pageId = `page-${e.target.dataset.page}`;
+                        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                        document.getElementById(pageId).classList.add('active');
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        e.target.classList.add('active');
+                    }
+                });
+                
+                // Delegated event listener for dynamic content
+                document.body.addEventListener('click', (e) => {
+                    const infoButton = e.target.closest('.info-button');
+                    const accordionButton = e.target.closest('.accordion-button');
+                    const modalCloseButton = e.target.closest('.modal-close');
+                    const modal = e.target.closest('.modal');
 
-             function setupDynamicListListeners() {
-                document.getElementById('rental-summary-list').addEventListener('click', handleSummaryListClick);
-                document.getElementById('cgt-summary-list').addEventListener('click', handleSummaryListClick);
-                document.getElementById('business-summary-list').addEventListener('click', handleSummaryListClick);
-            }
-            
-            function handleSummaryListClick(e) {
-                 const target = e.target;
-                 const type = target.dataset.type;
-                 const index = parseInt(target.dataset.index, 10);
-                 
-                 if (target.classList.contains('edit-btn')) {
-                     if (type === 'rental') openRentalModal(index);
-                     if (type === 'cgt') openCgtModal(index);
-                     if (type === 'business') openBusinessModal(index);
-                 } else if (target.classList.contains('delete-btn')) {
-                     if (type === 'rental') { rentalProperties.splice(index, 1); updateRentalList(); }
-                     if (type === 'cgt') { cgtEvents.splice(index, 1); updateCgtList(); }
-                     if (type === 'business') { businesses.splice(index, 1); updateBusinessList(); }
-                 }
-            }
-
-
-            function setupModalListeners() {
-                 document.querySelectorAll('.modal').forEach(modal => {
-                    modal.addEventListener('click', (e) => {
-                        if (e.target === modal || e.target.classList.contains('modal-close')) {
+                    if (infoButton) {
+                        e.stopPropagation(); // Prevent accordion from toggling
+                        const key = infoButton.dataset.key;
+                        const data = deductionDescriptions[key];
+                        const infoModal = document.getElementById('info-modal');
+                        if (data) {
+                           infoModal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto"><div class="p-6"><div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-gray-800">${data.title}</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div><div class="prose max-w-none text-gray-600">${data.content}</div></div></div>`;
+                           infoModal.classList.remove('hidden');
+                           infoModal.classList.add('flex');
+                        }
+                    } else if (accordionButton) {
+                        const isExpanded = accordionButton.getAttribute('aria-expanded') === 'true';
+                        accordionButton.setAttribute('aria-expanded', String(!isExpanded));
+                        accordionButton.classList.toggle('collapsed', isExpanded);
+                        const content = accordionButton.nextElementSibling;
+                        content.classList.toggle('collapsed', isExpanded);
+                    } else if (modalCloseButton || e.target === modal) {
+                        if(modal) {
                            modal.classList.add('hidden');
                            modal.classList.remove('flex');
                            modal.innerHTML = '';
                         }
-                    });
+                    }
                 });
-            }
-            
-            function setupAccordionListeners() {
-                accordionContainer.querySelectorAll('.accordion-button').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        if (e.target.closest('.info-button')) return;
-                        const isExpanded = button.getAttribute('aria-expanded') === 'true';
-                        button.setAttribute('aria-expanded', !isExpanded);
-                        const content = button.nextElementSibling;
-                        content.style.maxHeight = isExpanded ? "0px" : content.scrollHeight + "px";
-                    });
-                });
-                
+
                 document.querySelectorAll('input[type="radio"]').forEach(radio => {
                     radio.addEventListener('change', (event) => {
                         const name = event.target.name;
@@ -370,21 +345,31 @@
                     });
                 });
 
-                const infoModal = document.getElementById('info-modal');
-                accordionContainer.querySelectorAll('.info-button').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const key = button.dataset.key;
-                        const data = deductionDescriptions[key];
-                        if (data) {
-                           infoModal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-full overflow-y-auto"><div class="p-6"><div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold text-gray-800">${data.title}</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div><div class="prose max-w-none text-gray-600">${data.content}</div></div></div>`;
-                           infoModal.classList.remove('hidden');
-                           infoModal.classList.add('flex');
-                        }
-                    });
-                });
+                setupDynamicListListeners();
             }
 
+             function setupDynamicListListeners() {
+                document.getElementById('rental-summary-list').addEventListener('click', handleSummaryListClick);
+                document.getElementById('cgt-summary-list').addEventListener('click', handleSummaryListClick);
+                document.getElementById('business-summary-list').addEventListener('click', handleSummaryListClick);
+            }
+            
+            function handleSummaryListClick(e) {
+                 const target = e.target.closest('button');
+                 if(!target) return;
+                 const type = target.dataset.type;
+                 const index = parseInt(target.dataset.index, 10);
+                 if (target.classList.contains('edit-btn')) {
+                     if (type === 'rental') openRentalModal(index);
+                     if (type === 'cgt') openCgtModal(index);
+                     if (type === 'business') openBusinessModal(index);
+                 } else if (target.classList.contains('delete-btn')) {
+                     if (type === 'rental') { taxData.schedules.rentalProperties.splice(index, 1); updateRentalList(); }
+                     if (type === 'cgt') { taxData.schedules.cgtEvents.splice(index, 1); updateCgtList(); }
+                     if (type === 'business') { taxData.schedules.businesses.splice(index, 1); updateBusinessList(); }
+                 }
+            }
+            
             function handleOccupationChange(e) {
                 const selectedOccupation = e.target.value;
                 const suggestions = occupationSuggestions[selectedOccupation] || [];
@@ -405,17 +390,15 @@
                 }
             }
             
-            // --- MODAL FUNCTIONS --- //
-             function openBusinessModal(index = -1) {
+            function openBusinessModal(index = -1) {
                 const modal = document.getElementById('business-modal');
                 const isEditing = index !== -1;
-                const biz = isEditing ? businesses[index] : { name: '', abn: '', income: 0, cogs: 0, expenses: 0 };
-                
+                const biz = isEditing ? taxData.schedules.businesses[index] : {};
                 const businessExpenses = ['Advertising', 'Bank fees', 'Bookkeeping', 'Depreciation', 'Insurance', 'Interest', 'Motor vehicle', 'Printing & stationery', 'Repairs & maintenance', 'Salaries & wages', 'Superannuation', 'Telephone', 'Travel', 'Other'];
 
                 modal.innerHTML = `
                     <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-                        <div class="p-4 border-b"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Business Worksheet</h3></div>
+                        <div class="p-4 border-b flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Business Worksheet</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div>
                         <div class="p-6 overflow-y-auto flex-grow">
                              <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div><label class="block text-sm font-medium">Business Name</label><input type="text" id="biz-name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${biz.name || ''}"></div>
@@ -433,24 +416,14 @@
                                  </div>
                                  <div>
                                     <h4 class="font-semibold mb-2">Expenses</h4>
-                                    <div class="space-y-2">
-                                        ${businessExpenses.map(exp => `
-                                            <div class="flex justify-between items-center"><label class="text-sm">${exp}</label><input type="number" class="biz-expense-input w-32 text-right p-1 border rounded" data-expense-name="${exp}" value="${biz.expenseDetails ? (biz.expenseDetails[exp] || '') : ''}"></div>
-                                        `).join('')}
-                                    </div>
+                                    <div class="space-y-2">${businessExpenses.map(exp => `<div class="flex justify-between items-center"><label class="text-sm">${exp}</label><input type="number" class="biz-expense-input w-32 text-right p-1 border rounded" data-expense-name="${exp}" value="${biz.expenseDetails ? (biz.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div>
                                     <div class="flex justify-between items-center mt-2 pt-2 border-t"><label class="text-sm font-semibold">Total Expenses</label><span id="biz-total-exp" class="font-semibold text-right"></span></div>
                                  </div>
                              </div>
                         </div>
-                        <div class="p-4 border-t bg-gray-50 flex justify-end space-x-2">
-                             <button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button>
-                             <button id="save-business-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Business</button>
-                        </div>
-                    </div>
-                `;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                
+                        <div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-business-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Business</button></div>
+                    </div>`;
+                modal.classList.remove('hidden'); modal.classList.add('flex');
                 const updateBusinessCalcs = () => {
                     const income = parseFloat(document.getElementById('biz-income').value) || 0;
                     const os = parseFloat(document.getElementById('biz-os').value) || 0;
@@ -458,12 +431,10 @@
                     const cs = parseFloat(document.getElementById('biz-cs').value) || 0;
                     const cogs = os + purchases - cs;
                     document.getElementById('biz-gti').textContent = formatCurrency(income - cogs);
-                    
                     let totalExp = 0;
                     document.querySelectorAll('.biz-expense-input').forEach(input => totalExp += parseFloat(input.value) || 0);
                     document.getElementById('biz-total-exp').textContent = formatCurrency(totalExp);
                 };
-
                 modal.querySelectorAll('input').forEach(input => input.addEventListener('input', updateBusinessCalcs));
                 document.getElementById('save-business-btn').addEventListener('click', saveBusiness);
                 updateBusinessCalcs();
@@ -476,27 +447,10 @@
                 const purchases = parseFloat(document.getElementById('biz-purchases').value) || 0;
                 const cs = parseFloat(document.getElementById('biz-cs').value) || 0;
                 const cogs = os + purchases - cs;
-
-                let totalExpenses = 0;
-                let expenseDetails = {};
-                document.querySelectorAll('.biz-expense-input').forEach(input => {
-                    const value = parseFloat(input.value) || 0;
-                    totalExpenses += value;
-                    expenseDetails[input.dataset.expenseName] = value;
-                });
-
-                const bizData = {
-                    name: document.getElementById('biz-name').value || `Business ${businesses.length + 1}`,
-                    abn: document.getElementById('biz-abn').value,
-                    income: income,
-                    cogs: cogs,
-                    expenses: totalExpenses,
-                    os, purchases, cs, expenseDetails
-                };
-
-                if (index === -1) businesses.push(bizData);
-                else businesses[index] = bizData;
-                
+                let totalExpenses = 0, expenseDetails = {};
+                document.querySelectorAll('.biz-expense-input').forEach(input => { const value = parseFloat(input.value) || 0; totalExpenses += value; expenseDetails[input.dataset.expenseName] = value; });
+                const bizData = { name: document.getElementById('biz-name').value || `Business ${taxData.schedules.businesses.length + 1}`, abn: document.getElementById('biz-abn').value, income, cogs, expenses: totalExpenses, os, purchases, cs, expenseDetails };
+                if (index === -1) taxData.schedules.businesses.push(bizData); else taxData.schedules.businesses[index] = bizData;
                 updateBusinessList();
                 document.getElementById('business-modal').classList.add('hidden');
             }
@@ -504,28 +458,19 @@
             function openRentalModal(index = -1) {
                 const modal = document.getElementById('rental-modal');
                 const isEditing = index !== -1;
-                const prop = isEditing ? rentalProperties[index] : {};
-                
+                const prop = isEditing ? taxData.schedules.rentalProperties[index] : {};
                 const rentalExpenses = ['Advertising', 'Body corporate fees', 'Borrowing expenses', 'Cleaning', 'Council rates', 'Gardening/Lawn', 'Insurance', 'Interest on loans', 'Land tax', 'Legal fees', 'Pest control', 'Agent fees/commission', 'Repairs and maintenance', 'Stationery & postage', 'Travel expenses', 'Water charges', 'Sundry expenses', 'Capital works', 'Capital allowances'];
-
-                modal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col"><div class="p-4 border-b"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Rental Property</h3></div><div class="p-6 overflow-y-auto flex-grow"><label class="block text-sm font-medium">Property Address</label><input type="text" id="rental-address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${prop.address || ''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"><div><h4 class="font-semibold mb-2">Income</h4><div class="flex justify-between items-center mb-2"><label class="text-sm">Gross rent</label><input id="rental-income" type="number" class="w-32 text-right p-1 border rounded" value="${prop.income || ''}"></div></div><div><h4 class="font-semibold mb-2">Expenses</h4><div class="space-y-2">${rentalExpenses.map(exp => `<div class="flex justify-between items-center"><label class="text-sm">${exp}</label><input type="number" class="rental-expense-input w-32 text-right p-1 border rounded" data-expense-name="${exp}" value="${prop.expenseDetails ? (prop.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div></div></div></div><div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-rental-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Property</button></div></div>`;
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+                modal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col"><div class="p-4 border-b flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Rental Property</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div><div class="p-6 overflow-y-auto flex-grow"><label class="block text-sm font-medium">Property Address</label><input type="text" id="rental-address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${prop.address || ''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"><div><h4 class="font-semibold mb-2">Income</h4><div class="flex justify-between items-center mb-2"><label class="text-sm">Gross rent</label><input id="rental-income" type="number" class="w-32 text-right p-1 border rounded" value="${prop.income || ''}"></div></div><div><h4 class="font-semibold mb-2">Expenses</h4><div class="space-y-2">${rentalExpenses.map(exp => `<div class="flex justify-between items-center"><label class="text-sm">${exp}</label><input type="number" class="rental-expense-input w-32 text-right p-1 border rounded" data-expense-name="${exp}" value="${prop.expenseDetails ? (prop.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div></div></div></div><div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-rental-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Property</button></div></div>`;
+                modal.classList.remove('hidden'); modal.classList.add('flex');
                 document.getElementById('save-rental-btn').addEventListener('click', saveRental);
             }
             
             function saveRental(e) {
                 const index = parseInt(e.target.dataset.index, 10);
-                let totalExpenses = 0;
-                let expenseDetails = {};
-                document.querySelectorAll('.rental-expense-input').forEach(input => {
-                    const value = parseFloat(input.value) || 0;
-                    totalExpenses += value;
-                    expenseDetails[input.dataset.expenseName] = value;
-                });
-
-                const propData = { address: document.getElementById('rental-address').value || `Property ${rentalProperties.length + 1}`, income: parseFloat(document.getElementById('rental-income').value) || 0, expenses: totalExpenses, expenseDetails };
-                if (index === -1) rentalProperties.push(propData); else rentalProperties[index] = propData;
+                let totalExpenses = 0, expenseDetails = {};
+                document.querySelectorAll('.rental-expense-input').forEach(input => { const value = parseFloat(input.value) || 0; totalExpenses += value; expenseDetails[input.dataset.expenseName] = value; });
+                const propData = { address: document.getElementById('rental-address').value || `Property ${taxData.schedules.rentalProperties.length + 1}`, income: parseFloat(document.getElementById('rental-income').value) || 0, expenses: totalExpenses, expenseDetails };
+                if (index === -1) taxData.schedules.rentalProperties.push(propData); else taxData.schedules.rentalProperties[index] = propData;
                 updateRentalList();
                 document.getElementById('rental-modal').classList.add('hidden');
             }
@@ -533,23 +478,20 @@
             function openCgtModal(index = -1) {
                 const modal = document.getElementById('cgt-modal');
                 const isEditing = index !== -1;
-                const event = isEditing ? cgtEvents[index] : { description: '', proceeds: 0, costBase: 0, discount: false };
-                modal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col"><div class="p-4 border-b"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Capital Gains Event</h3></div><div class="p-6 overflow-y-auto flex-grow space-y-4"><div><label class="block text-sm font-medium">Asset Description (e.g., BHP Shares)</label><input type="text" id="cgt-description" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${event.description || ''}"></div><div><label class="block text-sm font-medium">Total Capital Proceeds (Sale Price)</label><input type="number" id="cgt-proceeds" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${event.proceeds || ''}"></div><div><label class="block text-sm font-medium">Cost Base (Purchase Price + Costs)</label><input type="number" id="cgt-costbase" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${event.costBase || ''}"></div><div><label class="flex items-center"><input type="checkbox" id="cgt-discount" class="h-4 w-4" ${event.discount ? 'checked' : ''}><span class="ml-2 text-sm">Asset held for more than 12 months? (Eligible for 50% discount)</span></label></div></div><div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-cgt-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Event</button></div></div>`;
-                 modal.classList.remove('hidden');
-                 modal.classList.add('flex');
+                const event = isEditing ? taxData.schedules.cgtEvents[index] : {};
+                modal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col"><div class="p-4 border-b flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Capital Gains Event</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div><div class="p-6 overflow-y-auto flex-grow space-y-4"><div><label class="block text-sm font-medium">Asset Description (e.g., BHP Shares)</label><input type="text" id="cgt-description" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${event.description || ''}"></div><div><label class="block text-sm font-medium">Total Capital Proceeds (Sale Price)</label><input type="number" id="cgt-proceeds" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${event.proceeds || ''}"></div><div><label class="block text-sm font-medium">Cost Base (Purchase Price + Costs)</label><input type="number" id="cgt-costbase" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${event.costBase || ''}"></div><div><label class="flex items-center"><input type="checkbox" id="cgt-discount" class="h-4 w-4" ${event.discount ? 'checked' : ''}><span class="ml-2 text-sm">Asset held for more than 12 months? (Eligible for 50% discount)</span></label></div></div><div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-cgt-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Event</button></div></div>`;
+                 modal.classList.remove('hidden'); modal.classList.add('flex');
                  document.getElementById('save-cgt-btn').addEventListener('click', saveCgt);
             }
             
             function saveCgt(e) {
                 const index = parseInt(e.target.dataset.index, 10);
-                const eventData = { description: document.getElementById('cgt-description').value || `CGT Event ${cgtEvents.length + 1}`, proceeds: parseFloat(document.getElementById('cgt-proceeds').value) || 0, costBase: parseFloat(document.getElementById('cgt-costbase').value) || 0, discount: document.getElementById('cgt-discount').checked };
-                if (index === -1) cgtEvents.push(eventData); else cgtEvents[index] = eventData;
+                const eventData = { description: document.getElementById('cgt-description').value || `CGT Event ${taxData.schedules.cgtEvents.length + 1}`, proceeds: parseFloat(document.getElementById('cgt-proceeds').value) || 0, costBase: parseFloat(document.getElementById('cgt-costbase').value) || 0, discount: document.getElementById('cgt-discount').checked };
+                if (index === -1) taxData.schedules.cgtEvents.push(eventData); else taxData.schedules.cgtEvents[index] = eventData;
                 updateCgtList();
                 document.getElementById('cgt-modal').classList.add('hidden');
             }
 
-
-            // --- MAIN CALCULATION LOGIC --- //
             function calculate() {
                 const inputs = {
                     grossSalary: parseFloat(document.getElementById('grossSalary').value) || 0,
@@ -567,9 +509,9 @@
                     helpDebt: parseFloat(document.getElementById('helpDebt').value) || 0,
                 };
                 
-                const netRentalIncome = rentalProperties.reduce((acc, prop) => acc + prop.income - prop.expenses, 0);
-                const netCapitalGain = cgtEvents.reduce((acc, event) => acc + ((event.proceeds - event.costBase) * (event.discount ? 0.5 : 1)), 0);
-                const netBusinessIncome = businesses.reduce((acc, biz) => acc + biz.income - biz.cogs - biz.expenses, 0);
+                const netRentalIncome = taxData.schedules.rentalProperties.reduce((acc, prop) => acc + prop.income - prop.expenses, 0);
+                const netCapitalGain = taxData.schedules.cgtEvents.reduce((acc, event) => acc + ((event.proceeds - event.costBase) * (event.discount ? 0.5 : 1)), 0);
+                const netBusinessIncome = taxData.schedules.businesses.reduce((acc, biz) => acc + biz.income - biz.cogs - biz.expenses, 0);
                 
                 const totalIncome = inputs.grossSalary + inputs.bankInterest + inputs.dividendsUnfranked + inputs.dividendsFranked + inputs.frankingCredits + netBusinessIncome + (netRentalIncome > 0 ? netRentalIncome : 0) + (netCapitalGain > 0 ? netCapitalGain : 0);
 
@@ -585,6 +527,7 @@
                 });
                 
                 if (netRentalIncome < 0) totalDeductions += Math.abs(netRentalIncome);
+                if (netBusinessIncome < 0) totalDeductions += Math.abs(netBusinessIncome);
                 
                 const taxableIncome = Math.max(0, totalIncome - totalDeductions);
 
@@ -645,13 +588,14 @@
                 const repaymentIncome = taxableIncome;
                 const helpThresholds = [{limit: 51550, rate: 0.0}, {limit: 59518, rate: 0.01}, {limit: 63089, rate: 0.02}, {limit: 66875, rate: 0.025},{limit: 70888, rate: 0.03}, {limit: 75140, rate: 0.035}, {limit: 79649, rate: 0.04}, {limit: 84429, rate: 0.045},{limit: 89495, rate: 0.05}, {limit: 94865, rate: 0.055}, {limit: 100557, rate: 0.06}, {limit: 106590, rate: 0.065},{limit: 112985, rate: 0.07}, {limit: 119764, rate: 0.075}, {limit: 126950, rate: 0.08}, {limit: 134568, rate: 0.085},{limit: 142642, rate: 0.09}, {limit: 151200, rate: 0.095}, {limit: Infinity, rate: 0.10}];
                 if (inputs.helpDebt > 0 && repaymentIncome > helpThresholds[0].limit) {
-                    for(let i = 1; i < helpThresholds.length; i++){
-                         if (repaymentIncome <= helpThresholds[i].limit) {
-                            helpRepayment = repaymentIncome * helpThresholds[i-1].rate;
+                    let rate = 0;
+                    for(let i = helpThresholds.length - 1; i >= 0; i--){
+                        if (repaymentIncome >= helpThresholds[i].limit) {
+                            rate = helpThresholds[i].rate;
                             break;
                         }
                     }
-                    if(helpRepayment === 0 && repaymentIncome > 151200) helpRepayment = repaymentIncome * 0.10;
+                    if(rate > 0) helpRepayment = repaymentIncome * rate;
                 }
 
                 const finalOutcome = subTotal - helpRepayment;
@@ -668,9 +612,8 @@
                     finalResultDiv.innerHTML = `<p class="text-xl font-bold">Estimated Tax Payable</p><p class="text-4xl font-extrabold">${formatCurrency(Math.abs(data.finalOutcome))}</p>`;
                     finalResultDiv.className = 'md:col-span-2 mt-4 p-6 rounded-lg text-white text-center bg-red-500';
                 }
+                document.getElementById('calculate-section').style.display = 'none';
                 document.getElementById('results-container').style.display = 'block';
-                document.getElementById('printBtn').style.display = 'inline-block';
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
 
             function printReport() {
@@ -678,26 +621,25 @@
                  const resultsHtml = document.getElementById('results-breakdown').innerHTML;
                  const finalResultHtml = document.getElementById('finalResult').innerHTML;
                  let inputsHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Inputs Summary</h3>';
-                 document.querySelectorAll('.income-input, #paygWithheld, #spouseIncome, #dependentChildren, #helpDebt, #phiPremium, #spouseSuperContribution').forEach(input => {
-                     const label = input.previousElementSibling ? input.previousElementSibling.textContent : input.parentElement.previousElementSibling.textContent;
-                     inputsHtml += `<p><strong>${label}:</strong> ${formatCurrency(parseFloat(input.value) || 0)}</p>`;
+                 document.querySelectorAll('#page-main input, #page-main select').forEach(input => {
+                     const label = input.closest('div').querySelector('label');
+                     if(label) inputsHtml += `<p><strong>${label.textContent}:</strong> ${input.type === 'checkbox' ? (input.checked ? 'Yes' : 'No') : (input.value || 'N/A')}</p>`;
                  });
                  inputsHtml += '</div><hr style="margin: 1rem 0;">';
                  let businessHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Businesses</h3>';
-                 businesses.forEach(biz => { businessHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${biz.name}</h4><p>Gross Sales: ${formatCurrency(biz.income)}</p><p>COGS: ${formatCurrency(biz.cogs)}</p><p>Expenses: ${formatCurrency(biz.expenses)}</p><p><strong>Net: ${formatCurrency(biz.income - biz.cogs - biz.expenses)}</strong></p></div>`; });
+                 taxData.schedules.businesses.forEach(biz => { businessHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${biz.name}</h4><p>Gross Sales: ${formatCurrency(biz.income)}</p><p>COGS: ${formatCurrency(biz.cogs)}</p><p>Expenses: ${formatCurrency(biz.expenses)}</p><p><strong>Net: ${formatCurrency(biz.income - biz.cogs - biz.expenses)}</strong></p></div>`; });
                  businessHtml += '</div><hr style="margin: 1rem 0;">';
                  let rentalHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Rental Properties</h3>';
-                 rentalProperties.forEach(prop => { rentalHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${prop.address}</h4><p>Gross Rent: ${formatCurrency(prop.income)}</p><p>Total Expenses: ${formatCurrency(prop.expenses)}</p><p><strong>Net: ${formatCurrency(prop.income - prop.expenses)}</strong></p></div>`; });
+                 taxData.schedules.rentalProperties.forEach(prop => { rentalHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${prop.address}</h4><p>Gross Rent: ${formatCurrency(prop.income)}</p><p>Total Expenses: ${formatCurrency(prop.expenses)}</p><p><strong>Net: ${formatCurrency(prop.income - prop.expenses)}</strong></p></div>`; });
                   rentalHtml += '</div><hr style="margin: 1rem 0;">';
                  let cgtHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Capital Gains</h3>';
-                 cgtEvents.forEach(event => { const grossGain = event.proceeds - event.costBase; const netGain = event.discount ? grossGain * 0.5 : grossGain; cgtHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${event.description}</h4><p>Proceeds: ${formatCurrency(event.proceeds)}</p><p>Cost Base: ${formatCurrency(event.costBase)}</p><p>Gross Gain: ${formatCurrency(grossGain)}</p><p><strong>Net Gain: ${formatCurrency(netGain)}</strong></p></div>`; });
+                 taxData.schedules.cgtEvents.forEach(event => { const grossGain = event.proceeds - event.costBase; const netGain = event.discount ? grossGain * 0.5 : grossGain; cgtHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${event.description}</h4><p>Proceeds: ${formatCurrency(event.proceeds)}</p><p>Cost Base: ${formatCurrency(event.costBase)}</p><p>Gross Gain: ${formatCurrency(grossGain)}</p><p><strong>Net Gain: ${formatCurrency(netGain)}</strong></p></div>`; });
                   cgtHtml += '</div><hr style="margin: 1rem 0;">';
 
-                 printArea.innerHTML = `<div style="font-family: 'Inter', sans-serif; padding: 2rem;"><h1 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">Tax Estimate Report</h1>${inputsHtml}${businesses.length > 0 ? businessHtml : ''}${rentalProperties.length > 0 ? rentalHtml : ''}${cgtEvents.length > 0 ? cgtHtml : ''}<h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 2rem;">Calculation Summary</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;">${resultsHtml}</div><div style="margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: black; background-color: #f3f4f6;">${finalResultHtml}</div></div>`;
+                 printArea.innerHTML = `<div style="font-family: 'Inter', sans-serif; padding: 2rem;"><h1 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">Tax Estimate Report</h1>${inputsHtml}${taxData.schedules.businesses.length > 0 ? businessHtml : ''}${taxData.schedules.rentalProperties.length > 0 ? rentalHtml : ''}${taxData.schedules.cgtEvents.length > 0 ? cgtHtml : ''}<h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 2rem;">Calculation Summary</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;">${resultsHtml}</div><div style="margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: black; background-color: #f3f4f6;">${finalResultHtml}</div></div>`;
                  window.print();
             }
             
-            // --- INITIALIZE THE APP --- //
             initialize();
         });
     </script>

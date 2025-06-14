@@ -49,6 +49,9 @@
             body > *:not(#print-area) { display: none !important; }
             #print-area { display: block !important; }
         }
+         #notification-popup {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -72,6 +75,12 @@
                 <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="deductions">
                      <svg class="w-6 h-6 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
                     <span class="hidden lg:inline">Deductions</span>
+                </a></li>
+                 <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="documents">
+                    <svg class="w-6 h-6 lg:mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                    </svg>
+                    <span class="hidden lg:inline">Documents</span>
                 </a></li>
                 <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="report">
                     <svg class="w-6 h-6 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -198,6 +207,27 @@
                     </div>
                 </div>
 
+                <!-- Page: Documents -->
+                <div id="page-documents" class="page">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800">Documents</h2>
+                        <p class="text-gray-500">Upload and manage your tax-related documents.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border">
+                        <label for="file-upload" class="w-full inline-flex items-center justify-center px-6 py-10 border-2 border-dashed border-gray-300 rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="text-center">
+                                <svg class="w-12 h-12 mx-auto text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                                </svg>
+                                <span class="mt-2 block font-medium text-gray-700">Click to upload or drag and drop</span>
+                                <span class="mt-1 block text-sm text-gray-500">PDF, PNG, JPG, etc.</span>
+                            </div>
+                        </label>
+                        <input type="file" id="file-upload" multiple class="hidden">
+                        <div id="file-list" class="mt-6 space-y-3"></div>
+                    </div>
+                </div>
+
                 <!-- Page: Report -->
                 <div id="page-report" class="page">
                      <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Calculate & Report</h2><p class="text-gray-500">Review your final estimated tax outcome.</p></div>
@@ -214,6 +244,10 @@
                         <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
                            <button id="recalculateBtn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Recalculate</button>
                            <button id="printBtn" class="w-full sm:w-auto bg-gray-600 text-white px-8 py-3 rounded-md hover:bg-gray-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Print Report</button>
+                           <button id="emailBtn" class="w-full sm:w-auto bg-teal-600 text-white px-8 py-3 rounded-md hover:bg-teal-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Email Report</button>
+                        </div>
+                         <div id="notification-popup" class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2">
+                            Notification Message
                         </div>
                     </div>
                 </div>
@@ -232,13 +266,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            let taxData = { schedules: { businesses: [], rentalProperties: [], cgtEvents: [] } };
+            let taxData = { 
+                schedules: { businesses: [], rentalProperties: [], cgtEvents: [] },
+                documents: [] 
+            };
+            let lastCalculationResult = null;
             const occupations = ["Teachers and education professionals", "Nurses and midwives", "IT professionals", "Tradesperson", "Adult industry workers", "Agricultural workers", "Apprentices and trainees", "Australian Defence Force members", "Building and construction employees", "Bus drivers", "Call centre operators", "Cleaners", "Community support workers and direct carers", "Doctor, specialist or other medical professional", "Engineers", "Factory workers", "Fire fighters", "Fitness and sporting industry employees", "Flight crew", "Gaming attendants", "Guards and security employees", "Hairdressers and beauty professionals", "Hospitality industry employees", "Lawyers", "Meat workers", "Media professionals", "Mining site employees", "Office workers", "Paramedics", "Performing artists", "Pilots", "Police", "Professional sportsperson", "Real estate employees", "Recruitment consultants", "Retail industry workers", "Sales and marketing", "Train drivers", "Travel agent employees", "Truck drivers"];
             const occupationSuggestions = { "Teachers and education professionals": ["Teaching registration renewal", "Teaching aids & supplies", "Student excursions & school trips", "Professional publications/journals"], "Nurses and midwives": ["AHPRA/NMBA registration renewal", "Fob watch", "Stethoscope", "Non-slip shoes", "Professional publications"], "IT professionals": ["Home internet (work portion)", "Mobile phone (work portion)", "Software subscriptions", "Cyber-security software", "Industry certifications"], "Tradesperson": ["Tool insurance", "Licences & permits (forklift, etc)", "Protective sunglasses/sunscreen", "Heavy-duty work gloves"], "Building and construction employees": ["Tool insurance", "High-vis workwear", "Steel-cap boots", "Sunscreen and sunglasses", "Vehicle travel between sites"], "Hospitality industry employees": ["RSA/RCG course/renewal", "Knives or other tools", "Non-slip shoes", "Grooming expenses (if specific look is required)"], "Retail industry workers": ["Parking fees (if travelling between stores)", "Stationery (if required to buy your own)", "Use of own phone for work"], "Truck drivers": ["Log book", "Specific licence renewals (e.g. heavy vehicle)", "Overnight meal expenses (if allowance paid)", "Cabin items (fridge, etc.)"], "Office workers": ["Home office running expenses (if WFH)", "Professional subscriptions/memberships", "Work-related phone call costs", "Work-related internet usage"], "Hairdressers and beauty professionals": ["Scissors and clippers", "Brushes and combs", "Industry magazines and subscriptions", "Training courses & seminars"], "Fitness and sporting industry employees": ["First aid certificate renewal", "Fitness qualification/CPD courses", "Music subscriptions for classes", "Protective equipment (e.g. focus pads, gloves)"], "Lawyers": ["Practising certificate renewal", "Law society membership", "Legal robes and wigs", "Legal research subscriptions", "Court filing fees (if not reimbursed)"], "Police": ["Physical fitness expenses (in some cases)", "Ammunition (for practice, if required)", "Torches and batteries", "Off-duty training courses"], "Doctor, specialist or other medical professional": ["AHPRA registration renewal", "Medical indemnity insurance", "Medical equipment & instruments", "Subscriptions to medical journals", "Conference & seminar costs"] };
             const deductionBreakdowns = { "D1": { label: "Work-related car expenses", type: "choice", name: "d1_method", methods: { "cents_per_km": { label: "Cents per km method", items: ["Work-related kms (88c/km, max 5,000km)"] }, "logbook": { label: "Logbook method", items: ["Fuel and oil", "Repairs and servicing", "Registration", "Insurance", "Loan interest", "Depreciation", "EV home charging (4.2c/km)"] } } }, "D2": { type: "simple", label: "Work-related travel expenses", items: ["Flights / public transport fares", "Taxis and ride-sharing", "Accommodation", "Overnight meals & incidentals", "Tolls and parking (work-related)", "Short-term car hire"] }, "D3": { type: "simple", label: "Clothing & laundry expenses", items: ["Compulsory uniform costs", "Occupation-specific clothing", "Protective clothing (e.g. hi-vis, safety boots)", "Laundry ($1 per load - work only)", "Dry-cleaning"] }, "D4": { type: "simple", label: "Self-education expenses", items: ["Course or tuition fees (excl. HECS)", "Textbooks and stationery", "Student union / amenities fees", "Computer depreciation (work %)", "Professional library/journals"] }, "D5": { label: "Other work-related expenses", type: "choice", name: "d5_method", methods: { "fixed_rate_wfh": { label: "WFH Fixed Rate Method", items: ["Hours worked from home (70c per hour)"], note: "Note: Claiming the fixed rate covers phone, internet, stationery, and energy. These cannot be claimed separately." }, "actual_costs": { label: "Actual Costs Method", items: ["Union / Professional association fees", "Work-related phone expenses (%)", "Work-related internet expenses (%)", "Stationery & computer consumables", "Tools & equipment (<$300)", "Depreciation of tools/equipment (>$300)", "Protective equipment (glasses, hard hats)", "Other"] } } }, "D9": { type: "simple", label: "Gifts or donations", items: ["Donations to registered DGRs ($2+)", "Political party contributions (max $1,500)", "Bucket donations (max $10 without receipt)"] }, "D10": { type: "simple", label: "Cost of managing tax affairs", items: ["Tax agent fees", "Interest charged by ATO (GIC/SIC)", "Travel to see tax agent", "Litigation costs"] } };
             const deductionDescriptions = { "D1": { title: "About D1: Work-related car expenses", content: `<p class="mb-2">You can claim expenses for a car you own, lease, or hire when you use it for work.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Travel between two separate workplaces (e.g., from your first job to your second job).</li><li>Travel from your regular workplace to an alternative workplace (e.g., a client's office).</li><li>Travel if your home is a base of employment or if you have shifting places of work (common for tradies).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of normal daily trips between your home and regular place of work, even if you do minor tasks on the way or work outside normal hours.</li><li>Expenses where you have been reimbursed by your employer.</li></ul>` }, "D2": { title: "About D2: Work-related travel expenses", content: `<p class="mb-2">This relates to travel expenses you incur in the course of performing your work duties, especially when it requires an overnight stay away from home.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Accommodation, meals, and incidental expenses when travelling overnight for work.</li><li>Air, bus, train, and taxi/ride-share fares.</li><li>Bridge and road tolls, and parking fees related to work travel.</li><li>Expenses for using a vehicle that isn't considered a 'car' (e.g., ute with >1 tonne capacity).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of meals if your travel did not involve an overnight stay.</li><li>Any expenses for which you were reimbursed by your employer.</li></ul>` }, "D3": { title: "About D3: Clothing & laundry expenses", content: `<p class="mb-2">You can claim expenses for clothing that is specific to your work and not conventional in nature.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li><b>Compulsory uniforms:</b> Must be unique and distinctive to your employer (e.g., has a logo) and part of a strictly enforced policy.</li><li><b>Occupation-specific clothing:</b> Items that allow the public to recognise your occupation (e.g., a chef's chequered pants).</li><li><b>Protective clothing:</b> Items that protect you from illness or injury at work, like steel-capped boots, high-vis vests, and non-slip shoes.</li><li>The cost of laundering these specific items.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>The cost of plain or conventional clothing, even if your employer requires you to wear it (e.g., a black suit, white shirt).</li></ul>` }, "D4": { title: "About D4: Self-education expenses", content: `<p class="mb-2">You can claim expenses for a course or study that has a direct connection to your current employment.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim if the course:</h4><ul class="list-disc list-inside space-y-1"><li>Maintains or improves the specific skills and knowledge you need for your current job.</li><li>Is likely to lead to an increase in income from your current job.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>Expenses for a course that is only generally related to your employment.</li><li>Expenses for a course that will enable you to get a new job or change professions.</li><li>Repayments for HECS-HELP, FEE-HELP, VET student loans.</li></ul>` }, "D5": { title: "About D5: Other work-related expenses", content: `<p class="mb-2">This is a broad category for work expenses that don't fit into D1-D4.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Union and professional association fees.</li><li>Technical or professional publications.</li><li>The cost of tools and equipment (immediate deduction if under $300, depreciation if over).</li><li>The work-related portion of phone and internet usage (if using Actual Costs method).</li><li>The work-related portion of home office energy and stationery (if using Actual Costs method).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">Key Rule for Working From Home (WFH):</h4><p>If you use the <b>Fixed Rate Method</b> (70c per hour), this rate covers all your additional running expenses including electricity, gas, phone, internet, and stationery. You <b>cannot</b> claim these items separately. You can still claim depreciation on office furniture and equipment.</p>` }, "D9": { title: "About D9: Gifts or donations", content: `<p class="mb-2">You can claim a deduction for gifts or donations to organisations that are endorsed as deductible gift recipients (DGRs).</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Gifts of $2 or more made to a DGR.</li><li>Donations made through workplace giving programs.</li><li>Contributions to registered political parties (up to $1,500).</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim donations if you receive a material benefit in return, such as:</h4><ul class="list-disc list-inside space-y-1"><li>Raffle or art union tickets.</li><li>The cost of attending fundraising dinners.</li><li>Items with an advertised value (e.g., chocolates, pens).</li></ul>` }, "D10": { title: "About D10: Cost of managing tax affairs", content: `<p class="mb-2">You can claim expenses incurred in managing your own tax affairs.</p><h4 class="font-semibold text-gray-700 mt-4 mb-1">You can claim:</h4><ul class="list-disc list-inside space-y-1"><li>Fees paid to a registered tax agent for preparing and lodging your tax return.</li><li>Costs of travelling to see your tax agent.</li><li>Interest charged by the ATO (General Interest Charge or Shortfall Interest Charge).</li><li>Costs of tax-related books or software.</li></ul><h4 class="font-semibold text-gray-700 mt-4 mb-1">You generally cannot claim:</h4><ul class="list-disc list-inside space-y-1"><li>Fees paid for general financial advice.</li><li>ATO penalties.</li></ul>` } };
 
             const formatCurrency = (num) => `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            const formatFileSize = (bytes) => {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            };
+
 
             function initialize() {
                 const occupationSelect = document.getElementById('occupation');
@@ -250,6 +296,7 @@
                 });
                 buildDeductionsAccordion();
                 setupEventListeners();
+                updateFileList();
             }
 
             function buildDeductionsAccordion() {
@@ -276,6 +323,35 @@
                     accordionContainer.appendChild(accordionItem);
                 }
             }
+            
+            function updateFileList() {
+                const fileListContainer = document.getElementById('file-list');
+                fileListContainer.innerHTML = ''; 
+                
+                if (taxData.documents.length === 0) {
+                     fileListContainer.innerHTML = `<p class="text-center text-gray-500 py-4">No documents uploaded yet.</p>`;
+                     return;
+                }
+
+                taxData.documents.forEach((file, index) => {
+                    const fileElement = document.createElement('div');
+                    fileElement.className = 'flex items-center justify-between bg-gray-50 p-3 rounded-lg border';
+                    fileElement.innerHTML = `
+                        <div class="flex items-center min-w-0">
+                            <svg class="w-6 h-6 text-gray-500 mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-800 truncate">${file.name}</p>
+                                <p class="text-xs text-gray-500">${formatFileSize(file.size)}</p>
+                            </div>
+                        </div>
+                        <button class="delete-file-btn text-red-500 hover:text-red-700 ml-4 flex-shrink-0" data-index="${index}">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.134H8.09c-1.18 0-2.09.954-2.09 2.134v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                        </button>
+                    `;
+                    fileListContainer.appendChild(fileElement);
+                });
+            }
+
 
             function updateSummaryList(listId, dataArray, calculateNet) {
                 const list = document.getElementById(listId);
@@ -299,8 +375,51 @@
                 document.getElementById('calculateBtn').addEventListener('click', calculate);
                 document.getElementById('recalculateBtn').addEventListener('click', calculate);
                 document.getElementById('printBtn').addEventListener('click', printReport);
+                document.getElementById('emailBtn').addEventListener('click', emailReport);
                 document.getElementById('occupation').addEventListener('change', handleOccupationChange);
+
+                // File Upload Listeners
+                const fileUploadInput = document.getElementById('file-upload');
+                const fileUploadLabel = document.querySelector('label[for="file-upload"]');
+                fileUploadInput.addEventListener('change', (e) => {
+                    handleFiles(e.target.files);
+                });
                 
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    fileUploadLabel.addEventListener(eventName, preventDefaults, false);
+                });
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    fileUploadLabel.addEventListener(eventName, () => fileUploadLabel.classList.add('bg-gray-200'), false);
+                });
+                ['dragleave', 'drop'].forEach(eventName => {
+                     fileUploadLabel.addEventListener(eventName, () => fileUploadLabel.classList.remove('bg-gray-200'), false);
+                });
+                
+                fileUploadLabel.addEventListener('drop', (e) => {
+                    handleFiles(e.dataTransfer.files);
+                }, false);
+                
+                function preventDefaults (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                function handleFiles(files) {
+                     for (const file of files) {
+                        taxData.documents.push(file);
+                    }
+                    updateFileList();
+                }
+
+                 document.getElementById('file-list').addEventListener('click', (e) => {
+                    const deleteButton = e.target.closest('.delete-file-btn');
+                    if (deleteButton) {
+                        const index = parseInt(deleteButton.dataset.index, 10);
+                        taxData.documents.splice(index, 1);
+                        updateFileList();
+                    }
+                });
+
                 document.querySelector('nav').addEventListener('click', (e) => {
                     const link = e.target.closest('a');
                     if (link) {
@@ -614,7 +733,9 @@
                 }
 
                 const finalOutcome = subTotal - helpRepayment;
-                displayResults({ totalIncome, totalDeductions, taxableIncome, taxPayable, medicareLevy, mls, initialTax, lito, phiRebate, frankingCredits: inputs.frankingCredits, spouseOffset, netTax, paygWithheld: inputs.paygWithheld, subTotal, helpRepayment, finalOutcome });
+                const resultData = { totalIncome, totalDeductions, taxableIncome, taxPayable, medicareLevy, mls, initialTax, lito, phiRebate, frankingCredits: inputs.frankingCredits, spouseOffset, netTax, paygWithheld: inputs.paygWithheld, subTotal, helpRepayment, finalOutcome };
+                lastCalculationResult = resultData;
+                displayResults(resultData);
             }
 
             function displayResults(data) {
@@ -631,28 +752,91 @@
                 document.getElementById('results-container').style.display = 'block';
             }
 
+            function getReportHtmlForPrint() {
+                const resultsHtml = document.getElementById('results-breakdown').innerHTML;
+                const finalResultHtml = document.getElementById('finalResult').innerHTML;
+                let inputsHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Inputs Summary</h3>';
+                document.querySelectorAll('#page-main input, #page-main select').forEach(input => {
+                    const label = input.closest('div').querySelector('label');
+                    if(label) inputsHtml += `<p><strong>${label.textContent}:</strong> ${input.type === 'checkbox' ? (input.checked ? 'Yes' : 'No') : (input.value || 'N/A')}</p>`;
+                });
+                inputsHtml += '</div><hr style="margin: 1rem 0;">';
+                let businessHtml = taxData.schedules.businesses.length > 0 ? '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Businesses</h3>' : '';
+                taxData.schedules.businesses.forEach(biz => { businessHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${biz.name}</h4><p>Gross Sales: ${formatCurrency(biz.income)}</p><p>COGS: ${formatCurrency(biz.cogs)}</p><p>Expenses: ${formatCurrency(biz.expenses)}</p><p><strong>Net: ${formatCurrency(biz.income - biz.cogs - biz.expenses)}</strong></p></div>`; });
+                if (taxData.schedules.businesses.length > 0) businessHtml += '</div><hr style="margin: 1rem 0;">';
+                
+                let rentalHtml = taxData.schedules.rentalProperties.length > 0 ? '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Rental Properties</h3>' : '';
+                taxData.schedules.rentalProperties.forEach(prop => { rentalHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${prop.address}</h4><p>Gross Rent: ${formatCurrency(prop.income)}</p><p>Total Expenses: ${formatCurrency(prop.expenses)}</p><p><strong>Net: ${formatCurrency(prop.income - prop.expenses)}</strong></p></div>`; });
+                if (taxData.schedules.rentalProperties.length > 0) rentalHtml += '</div><hr style="margin: 1rem 0;">';
+
+                let cgtHtml = taxData.schedules.cgtEvents.length > 0 ? '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Capital Gains</h3>' : '';
+                taxData.schedules.cgtEvents.forEach(event => { const grossGain = event.proceeds - event.costBase; const netGain = event.discount ? grossGain * 0.5 : grossGain; cgtHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${event.description}</h4><p>Proceeds: ${formatCurrency(event.proceeds)}</p><p>Cost Base: ${formatCurrency(event.costBase)}</p><p>Gross Gain: ${formatCurrency(grossGain)}</p><p><strong>Net Gain: ${formatCurrency(netGain)}</strong></p></div>`; });
+                if (taxData.schedules.cgtEvents.length > 0) cgtHtml += '</div><hr style="margin: 1rem 0;">';
+
+                return `<div style="font-family: 'Inter', sans-serif; padding: 2rem;"><h1 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">Tax Estimate Report</h1>${inputsHtml}${businessHtml}${rentalHtml}${cgtHtml}<h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 2rem;">Calculation Summary</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;">${resultsHtml}</div><div style="margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: black; background-color: #f3f4f6;">${finalResultHtml}</div></div>`;
+            }
+
+            function getReportTextSummary(data) {
+                const clientName = document.getElementById('clientName').value || 'N/A';
+                const clientTFN = document.getElementById('clientTFN').value || 'N/A';
+                const clientDOB = document.getElementById('clientDOB').value || 'N/A';
+
+                let body = `Hi Team,\n\nPlease find the tax details for client: ${clientName}.\n\n--- Client Details ---\nName: ${clientName}\nTFN: ${clientTFN}\nDOB: ${clientDOB}\n\n`;
+                body += `--- Calculation Summary ---\n`;
+                body += `Total Income: ${formatCurrency(data.totalIncome)}\n`;
+                body += `Total Deductions: ${formatCurrency(data.totalDeductions)}\n`;
+                body += `Taxable Income: ${formatCurrency(data.taxableIncome)}\n`;
+                body += `---------------------------\n`;
+                body += `Net Tax on Income: ${formatCurrency(data.netTax)}\n`;
+                const finalOutcomeText = data.finalOutcome >= 0 
+                    ? `Estimated Refund: ${formatCurrency(data.finalOutcome)}`
+                    : `Estimated Payable: ${formatCurrency(Math.abs(data.finalOutcome))}`;
+                body += `FINAL ESTIMATE: ${finalOutcomeText}\n\n`;
+                body += `--- Uploaded Documents ---\n`;
+                if(taxData.documents.length > 0) {
+                    taxData.documents.forEach(doc => { body += `- ${doc.name}\n`; });
+                } else {
+                    body += `No documents were uploaded.\n`;
+                }
+                body += `\nThank you.\n`;
+                return body;
+            }
+
             function printReport() {
                  const printArea = document.getElementById('print-area');
-                 const resultsHtml = document.getElementById('results-breakdown').innerHTML;
-                 const finalResultHtml = document.getElementById('finalResult').innerHTML;
-                 let inputsHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Inputs Summary</h3>';
-                 document.querySelectorAll('#page-main input, #page-main select').forEach(input => {
-                     const label = input.closest('div').querySelector('label');
-                     if(label) inputsHtml += `<p><strong>${label.textContent}:</strong> ${input.type === 'checkbox' ? (input.checked ? 'Yes' : 'No') : (input.value || 'N/A')}</p>`;
-                 });
-                 inputsHtml += '</div><hr style="margin: 1rem 0;">';
-                 let businessHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Businesses</h3>';
-                 taxData.schedules.businesses.forEach(biz => { businessHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${biz.name}</h4><p>Gross Sales: ${formatCurrency(biz.income)}</p><p>COGS: ${formatCurrency(biz.cogs)}</p><p>Expenses: ${formatCurrency(biz.expenses)}</p><p><strong>Net: ${formatCurrency(biz.income - biz.cogs - biz.expenses)}</strong></p></div>`; });
-                 businessHtml += '</div><hr style="margin: 1rem 0;">';
-                 let rentalHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Rental Properties</h3>';
-                 taxData.schedules.rentalProperties.forEach(prop => { rentalHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${prop.address}</h4><p>Gross Rent: ${formatCurrency(prop.income)}</p><p>Total Expenses: ${formatCurrency(prop.expenses)}</p><p><strong>Net: ${formatCurrency(prop.income - prop.expenses)}</strong></p></div>`; });
-                  rentalHtml += '</div><hr style="margin: 1rem 0;">';
-                 let cgtHtml = '<div><h3 style="font-size: 1.25rem; font-weight: 700;">Capital Gains</h3>';
-                 taxData.schedules.cgtEvents.forEach(event => { const grossGain = event.proceeds - event.costBase; const netGain = event.discount ? grossGain * 0.5 : grossGain; cgtHtml += `<div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;"><h4>${event.description}</h4><p>Proceeds: ${formatCurrency(event.proceeds)}</p><p>Cost Base: ${formatCurrency(event.costBase)}</p><p>Gross Gain: ${formatCurrency(grossGain)}</p><p><strong>Net Gain: ${formatCurrency(netGain)}</strong></p></div>`; });
-                  cgtHtml += '</div><hr style="margin: 1rem 0;">';
-
-                 printArea.innerHTML = `<div style="font-family: 'Inter', sans-serif; padding: 2rem;"><h1 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">Tax Estimate Report</h1>${inputsHtml}${taxData.schedules.businesses.length > 0 ? businessHtml : ''}${taxData.schedules.rentalProperties.length > 0 ? rentalHtml : ''}${taxData.schedules.cgtEvents.length > 0 ? cgtHtml : ''}<h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 2rem;">Calculation Summary</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;">${resultsHtml}</div><div style="margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: black; background-color: #f3f4f6;">${finalResultHtml}</div></div>`;
+                 printArea.innerHTML = getReportHtmlForPrint();
                  window.print();
+            }
+            
+            function showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification-popup');
+                notification.textContent = message;
+                notification.className = 'fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2'; // Reset classes
+                if (type === 'error') {
+                     notification.classList.add('bg-red-500');
+                } else {
+                     notification.classList.add('bg-green-500');
+                }
+                notification.classList.remove('opacity-0', 'translate-y-2');
+                setTimeout(() => {
+                    notification.classList.add('opacity-0', 'translate-y-2');
+                }, 3000);
+            }
+
+            function emailReport() {
+                if (!lastCalculationResult) {
+                    showNotification("Please calculate the report first.", "error");
+                    return;
+                }
+                const email = 'jet@j2kaccounting.com.au';
+                const clientName = document.getElementById('clientName').value || 'Client';
+                const subject = encodeURIComponent(`FY 2025 Details - ${clientName}`);
+                const bodyText = getReportTextSummary(lastCalculationResult);
+                
+                const mailtoLink = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
+                
+                window.location.href = mailtoLink;
+                showNotification("Opening email client...");
             }
             
             initialize();

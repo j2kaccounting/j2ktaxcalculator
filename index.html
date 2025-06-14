@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATO Deduction Finder - Detailed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-button svg {
+            transition: transform 0.2s ease-in-out;
+        }
+        .accordion-button[aria-expanded="true"] svg {
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">ATO Deduction Finder</h1>
+            <p class="text-gray-600 mb-6">Estimate your 2025 tax outcome with detailed deduction breakdowns.</p>
+
+            <!-- Main Form -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Left Column -->
+                <div>
+                    <!-- User Inputs -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Your Details</h3>
+                        <!-- Residency Status -->
+                        <div class="mb-4">
+                            <label for="residencyStatus" class="block text-sm font-medium text-gray-700 mb-2">Residency Status</label>
+                            <div class="relative flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input id="residencyStatus" name="residencyStatus" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="residencyStatus" class="font-medium text-gray-700">I am a temporary resident</label>
+                                    <p class="text-gray-500">Select if you are not eligible for Medicare.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Occupation -->
+                        <div class="mb-4">
+                            <label for="occupation" class="block text-sm font-medium text-gray-700">Occupation</label>
+                            <select id="occupation" name="occupation" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                <option>Select your occupation</option>
+                            </select>
+                        </div>
+
+                        <!-- Gross Salary -->
+                        <div class="mb-4">
+                            <label for="grossSalary" class="block text-sm font-medium text-gray-700">Gross Annual Salary</label>
+                            <input type="number" name="grossSalary" id="grossSalary" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 80000">
+                        </div>
+
+                        <!-- PAYG Withheld -->
+                        <div>
+                            <label for="paygWithheld" class="block text-sm font-medium text-gray-700">PAYG Withheld</label>
+                            <input type="number" name="paygWithheld" id="paygWithheld" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="e.g., 18000">
+                        </div>
+                    </div>
+
+                    <!-- Occupation Specific Suggestions -->
+                    <div id="occupationSuggestions" class="mt-6" style="display: none;">
+                         <h3 class="text-lg font-medium text-gray-900 mb-2">Common Deductions for Your Occupation</h3>
+                         <div id="occupationSuggestionsContainer" class="space-y-3 bg-indigo-50 p-4 rounded-lg">
+                            <!-- Suggested deductions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <!-- Standard Deductions Accordion -->
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Work-Related Deductions (D1-D10)</h3>
+                        <div id="deductionsAccordion" class="space-y-2">
+                            <!-- D1-D10 Accordion will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Calculate Button -->
+             <div class="mt-8 text-center">
+                <button id="calculateBtn" class="w-full md:w-auto bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Calculate</button>
+            </div>
+
+
+            <!-- Results -->
+            <div id="results" class="mt-8 pt-6 border-t border-gray-200" style="display: none;">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Estimated Tax Outcome</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-gray-500">Taxable Income</p>
+                        <p id="taxableIncome" class="text-2xl font-semibold text-gray-900"></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-gray-500">Tax on Income</p>
+                        <p id="taxPayable" class="text-2xl font-semibold text-gray-900"></p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-gray-500">Medicare Levy</p>
+                        <p id="medicareLevy" class="text-2xl font-semibold text-gray-900"></p>
+                    </div>
+                     <div id="finalResult" class="md:col-span-2 p-6 rounded-lg text-white text-center">
+                        <p id="resultText" class="text-xl font-bold"></p>
+                        <p id="resultAmount" class="text-4xl font-extrabold"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const occupations = [
+                "Teachers and education professionals", "Nurses and midwives", "IT professionals", "Tradesperson", "Adult industry workers", "Agricultural workers", "Apprentices and trainees", "Australian Defence Force members",
+                "Building and construction employees", "Bus drivers", "Call centre operators", "Cleaners",
+                "Community support workers and direct carers", "Doctor, specialist or other medical professional",
+                "Engineers", "Factory workers", "Fire fighters", "Fitness and sporting industry employees", "Flight crew",
+                "Gaming attendants", "Guards and security employees", "Hairdressers and beauty professionals",
+                "Hospitality industry employees", "Lawyers", "Meat workers", "Media professionals",
+                "Mining site employees", "Office workers", "Paramedics", "Performing artists", "Pilots",
+                "Police", "Professional sportsperson", "Real estate employees", "Recruitment consultants", "Retail industry workers",
+                "Sales and marketing", "Train drivers", "Travel agent employees",
+                "Truck drivers"
+            ];
+            
+            const occupationSuggestions = {
+                "Teachers and education professionals": ["Teaching registration renewal", "Teaching aids & supplies", "Student excursions & school trips", "Professional publications/journals"],
+                "Nurses and midwives": ["AHPRA/NMBA registration renewal", "Fob watch", "Stethoscope", "Non-slip shoes", "Professional publications"],
+                "IT professionals": ["Home internet (work portion)", "Mobile phone (work portion)", "Software subscriptions", "Cyber-security software", "Industry certifications"],
+                "Tradesperson": ["Tool insurance", "Licences & permits (forklift, etc)", "Protective sunglasses/sunscreen", "Heavy-duty work gloves"],
+                "Building and construction employees": ["Tool insurance", "High-vis workwear", "Steel-cap boots", "Sunscreen and sunglasses", "Vehicle travel between sites"],
+                "Hospitality industry employees": ["RSA/RCG course/renewal", "Knives or other tools", "Non-slip shoes", "Grooming expenses (if specific look is required)"],
+                "Retail industry workers": ["Parking fees (if travelling between stores)", "Stationery (if required to buy your own)", "Use of own phone for work"],
+                "Truck drivers": ["Log book", "Specific licence renewals (e.g. heavy vehicle)", "Overnight meal expenses (if allowance paid)", "Cabin items (fridge, etc.)"],
+                "Office workers": ["Home office running expenses (if WFH)", "Professional subscriptions/memberships", "Work-related phone call costs", "Work-related internet usage"],
+                "Hairdressers and beauty professionals": ["Scissors and clippers", "Brushes and combs", "Industry magazines and subscriptions", "Training courses & seminars"],
+                "Fitness and sporting industry employees": ["First aid certificate renewal", "Fitness qualification/CPD courses", "Music subscriptions for classes", "Protective equipment (e.g. focus pads, gloves)"],
+                "Lawyers": ["Practising certificate renewal", "Law society membership", "Legal robes and wigs", "Legal research subscriptions", "Court filing fees (if not reimbursed)"],
+                "Police": ["Physical fitness expenses (in some cases)", "Ammunition (for practice, if required)", "Torches and batteries", "Off-duty training courses"],
+                "Doctor, specialist or other medical professional": ["AHPRA registration renewal", "Medical indemnity insurance", "Medical equipment & instruments", "Subscriptions to medical journals", "Conference & seminar costs"]
+            };
+            
+            const deductionBreakdowns = {
+                "D1": {
+                    label: "Work-related car expenses",
+                    type: "choice",
+                    name: "d1_method",
+                    methods: {
+                        "cents_per_km": {
+                            label: "Cents per km method",
+                            items: ["Work-related kms (88c/km, max 5,000km)"]
+                        },
+                        "logbook": {
+                            label: "Logbook method",
+                            items: ["Fuel and oil", "Repairs and servicing", "Registration", "Insurance", "Loan interest", "Depreciation", "EV home charging (4.2c/km)"]
+                        }
+                    }
+                },
+                "D2": { type: "simple", label: "Work-related travel expenses", items: ["Flights / public transport fares", "Taxis and ride-sharing", "Accommodation", "Overnight meals & incidentals", "Tolls and parking (work-related)", "Short-term car hire"] },
+                "D3": { type: "simple", label: "Clothing & laundry expenses", items: ["Compulsory uniform costs", "Occupation-specific clothing", "Protective clothing (e.g. hi-vis, safety boots)", "Laundry ($1 per load - work only)", "Dry-cleaning"] },
+                "D4": { type: "simple", label: "Self-education expenses", items: ["Course or tuition fees (excl. HECS)", "Textbooks and stationery", "Student union / amenities fees", "Computer depreciation (work %)", "Professional library/journals"] },
+                "D5": { 
+                    label: "Other work-related expenses",
+                    type: "choice",
+                    name: "d5_method",
+                    methods: {
+                        "fixed_rate_wfh": {
+                            label: "WFH Fixed Rate Method",
+                            items: ["Hours worked from home (70c per hour)"],
+                            note: "Note: Claiming the fixed rate covers phone, internet, stationery, and energy. These cannot be claimed separately."
+                        },
+                        "actual_costs": {
+                            label: "Actual Costs Method",
+                            items: ["Union / Professional association fees", "Work-related phone expenses (%)", "Work-related internet expenses (%)", "Stationery & computer consumables", "Tools & equipment (<$300)", "Depreciation of tools/equipment (>$300)", "Protective equipment (glasses, hard hats)"]
+                        }
+                    }
+                 },
+                "D9": { type: "simple", label: "Gifts or donations", items: ["Donations to registered DGRs ($2+)", "Political party contributions (max $1,500)", "Bucket donations (max $10 without receipt)"] },
+                "D10": { type: "simple", label: "Cost of managing tax affairs", items: ["Tax agent fees", "Interest charged by ATO (GIC/SIC)", "Travel to see tax agent", "Litigation costs"] }
+            };
+
+            const occupationSelect = document.getElementById('occupation');
+            occupations.sort().forEach(occupation => {
+                const option = document.createElement('option');
+                option.value = occupation;
+                option.textContent = occupation;
+                occupationSelect.appendChild(option);
+            });
+
+            const accordionContainer = document.getElementById('deductionsAccordion');
+            for (const key in deductionBreakdowns) {
+                const category = deductionBreakdowns[key];
+                const accordionItem = document.createElement('div');
+                accordionItem.classList.add('border', 'border-gray-200', 'rounded-md');
+
+                let contentHtml = '';
+                if (category.type === 'choice') {
+                    let radioButtonsHtml = '';
+                    let first = true;
+                    for (const methodKey in category.methods) {
+                        const method = category.methods[methodKey];
+                        radioButtonsHtml += `
+                            <div class="${first ? '' : 'border-t border-gray-200 pt-4'}">
+                                <label class="flex items-center">
+                                    <input type="radio" name="${category.name}" value="${methodKey}" class="h-4 w-4 text-indigo-600 border-gray-300" ${first ? 'checked' : ''}>
+                                    <span class="ml-2 text-sm font-medium text-gray-800">${method.label}</span>
+                                </label>
+                                <div id="${key}_${methodKey}_inputs" class="mt-2 pl-6 space-y-3">
+                                    ${method.items.map(item => `
+                                        <div class="flex justify-between items-center">
+                                            <label class="text-sm text-gray-700">${item}</label>
+                                            <input type="number" data-category-key="${key}" data-method-key="${methodKey}" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="${item.includes('km') || item.includes('hour') ? 'qty' : '$0.00'}" ${!first ? 'disabled' : ''}>
+                                        </div>
+                                    `).join('')}
+                                    ${method.note ? `<p class="text-xs text-gray-500 mt-2">${method.note}</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                        first = false;
+                    }
+                    contentHtml = `<div class="space-y-4">${radioButtonsHtml}</div>`;
+                } else {
+                    // Standard layout for other deductions
+                    contentHtml = `
+                        <div class="space-y-3">
+                            ${category.items.map(item => `
+                                <div class="flex justify-between items-center">
+                                    <label class="text-sm text-gray-700">${item}</label>
+                                    <input type="number" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00">
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                accordionItem.innerHTML = `
+                    <button type="button" class="accordion-button w-full flex justify-between items-center p-3 text-left bg-gray-100 hover:bg-gray-200 focus:outline-none" aria-expanded="false">
+                        <span class="font-medium text-gray-800">${key}: ${category.label}</span>
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                    <div class="accordion-content p-4 bg-white">${contentHtml}</div>
+                `;
+                accordionContainer.appendChild(accordionItem);
+            }
+
+            // Method Choice Logic
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', (event) => {
+                    const name = event.target.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                        const methodKey = r.value;
+                        const key = r.closest('.accordion-content').previousElementSibling.textContent.split(':')[0];
+                        const inputs = document.querySelectorAll(`#${key}_${methodKey}_inputs input`);
+                        const isSelected = r.checked;
+                        inputs.forEach(input => {
+                            input.disabled = !isSelected;
+                            if (!isSelected) input.value = '';
+                        });
+                    });
+                });
+            });
+            
+            accordionContainer.querySelectorAll('.accordion-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+                    button.setAttribute('aria-expanded', !isExpanded);
+                    const content = button.nextElementSibling;
+                    if (isExpanded) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            });
+
+            occupationSelect.addEventListener('change', (e) => {
+                const selectedOccupation = e.target.value;
+                const suggestions = occupationSuggestions[selectedOccupation] || [];
+                const suggestionsContainer = document.getElementById('occupationSuggestionsContainer');
+                const suggestionsSection = document.getElementById('occupationSuggestions');
+                
+                suggestionsContainer.innerHTML = '';
+                if(suggestions.length > 0){
+                    suggestions.forEach(suggestion => {
+                         const div = document.createElement('div');
+                         div.classList.add('flex', 'justify-between', 'items-center');
+                         div.innerHTML = `
+                            <label class="text-sm text-gray-700">${suggestion}</label>
+                            <input type="number" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00">
+                        `;
+                        suggestionsContainer.appendChild(div);
+                    });
+                    suggestionsSection.style.display = 'block';
+                } else {
+                    suggestionsSection.style.display = 'none';
+                }
+            });
+
+            document.getElementById('calculateBtn').addEventListener('click', () => {
+                const grossSalary = parseFloat(document.getElementById('grossSalary').value) || 0;
+                const paygWithheld = parseFloat(document.getElementById('paygWithheld').value) || 0;
+                const isTemporaryResident = document.getElementById('residencyStatus').checked;
+
+                let totalDeductions = 0;
+                document.querySelectorAll('.deduction-input').forEach(input => {
+                    if (!input.disabled) {
+                        const val = parseFloat(input.value) || 0;
+                        const categoryKey = input.dataset.categoryKey;
+                        const methodKey = input.dataset.methodKey;
+
+                        if (categoryKey === 'D1' && methodKey === 'cents_per_km') {
+                            const claimableKms = Math.min(val, 5000);
+                            totalDeductions += claimableKms * 0.88;
+                        } else if (categoryKey === 'D5' && methodKey === 'fixed_rate_wfh') {
+                             totalDeductions += val * 0.70;
+                        }
+                        else {
+                            totalDeductions += val;
+                        }
+                    }
+                });
+
+                const taxableIncome = grossSalary > totalDeductions ? grossSalary - totalDeductions : 0;
+
+                let taxPayable = 0;
+                if (taxableIncome > 18200) {
+                    if (taxableIncome <= 45000) {
+                        taxPayable = (taxableIncome - 18200) * 0.16;
+                    } else if (taxableIncome <= 135000) {
+                        taxPayable = 4288 + (taxableIncome - 45000) * 0.30;
+                    } else if (taxableIncome <= 190000) {
+                        taxPayable = 31288 + (taxableIncome - 135000) * 0.37;
+                    } else {
+                        taxPayable = 51638 + (taxableIncome - 190000) * 0.45;
+                    }
+                }
+
+                const medicareLevy = isTemporaryResident || taxableIncome < 26000 ? 0 : taxableIncome * 0.02; // Basic threshold check
+                const totalTax = taxPayable + medicareLevy;
+                const finalOutcome = totalTax - paygWithheld;
+
+                document.getElementById('taxableIncome').textContent = `$${taxableIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('taxPayable').textContent = `$${taxPayable.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('medicareLevy').textContent = `$${medicareLevy.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                const finalResultDiv = document.getElementById('finalResult');
+                const resultText = document.getElementById('resultText');
+                const resultAmount = document.getElementById('resultAmount');
+
+                if (finalOutcome <= 0) {
+                    resultText.textContent = "Estimated Tax Refund";
+                    resultAmount.textContent = `$${Math.abs(finalOutcome).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    finalResultDiv.className = 'md:col-span-2 p-6 rounded-lg text-white text-center bg-green-500';
+                } else {
+                    resultText.textContent = "Estimated Tax Payable";
+                    resultAmount.textContent = `$${finalOutcome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    finalResultDiv.className = 'md:col-span-2 p-6 rounded-lg text-white text-center bg-red-500';
+                }
+
+                document.getElementById('results').style.display = 'block';
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

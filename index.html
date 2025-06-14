@@ -53,35 +53,35 @@
 </head>
 <body class="bg-gray-100">
 
-    <div id="main-app" class="min-h-screen lg:flex">
+    <div id="main-app" class="min-h-screen flex flex-col lg:flex-row">
         <!-- Sidebar Navigation -->
-        <nav class="bg-white lg:w-64 flex-shrink-0 border-r border-gray-200">
-            <div class="p-6">
+        <nav class="bg-white lg:h-screen lg:w-64 flex-shrink-0 border-b lg:border-b-0 lg:border-r border-gray-200">
+            <div class="p-6 hidden lg:block">
                 <h1 class="text-2xl font-bold text-indigo-600">Tax Calculator</h1>
                 <p class="text-xs text-gray-500">2025 Financial Year</p>
             </div>
-            <ul class="flex lg:flex-col p-4 lg:p-2 space-x-2 lg:space-x-0 lg:space-y-1">
-                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active" data-page="main">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    Main Details
+            <ul class="flex lg:flex-col w-full lg:w-auto justify-around p-2 lg:p-2 lg:space-y-1">
+                <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100 active" data-page="main">
+                    <svg class="w-6 h-6 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span class="hidden lg:inline">Main Details</span>
                 </a></li>
-                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="schedules">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
-                    Schedules
+                <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="schedules">
+                    <svg class="w-6 h-6 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
+                    <span class="hidden lg:inline">Schedules</span>
                 </a></li>
-                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="deductions">
-                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
-                    Deductions
+                <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="deductions">
+                     <svg class="w-6 h-6 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0v-4m0 4h1m-1 0V5m2 16h5m-5 0v-4m0 4H5m9 0v-4m0 4h1m-1-4h-5m-4 0v-4m0 4h1m0-4h3m-3 0V5"></path></svg>
+                    <span class="hidden lg:inline">Deductions</span>
                 </a></li>
-                <li><a href="#" class="nav-link flex items-center px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="report">
-                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Calculate & Report
+                <li><a href="#" class="nav-link flex items-center justify-center lg:justify-start px-4 py-2 text-gray-700 rounded-lg hover:bg-gray-100" data-page="report">
+                    <svg class="w-6 h-6 lg:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="hidden lg:inline">Calculate & Report</span>
                 </a></li>
             </ul>
         </nav>
         
         <!-- Main Content -->
-        <div class="flex-1 p-6 lg:p-10 overflow-y-auto">
+        <div class="flex-1 p-4 md:p-6 lg:p-10 overflow-y-auto">
             <main>
                 <!-- Page: Main Details -->
                 <div id="page-main" class="page active">
@@ -202,16 +202,16 @@
                 <div id="page-report" class="page">
                      <div class="mb-8"><h2 class="text-2xl font-bold text-gray-800">Calculate & Report</h2><p class="text-gray-500">Review your final estimated tax outcome.</p></div>
                      <div id="calculate-section" class="flex justify-center items-center flex-col bg-white p-8 rounded-lg shadow-sm border">
-                        <p class="text-lg text-gray-700 mb-4">You have entered all your details. Ready to see the results?</p>
+                        <p class="text-lg text-center text-gray-700 mb-4">You have entered all your details. Ready to see the results?</p>
                         <button id="calculateBtn" class="w-full sm:w-auto bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Calculate My Tax Outcome</button>
                     </div>
                     <div id="results-container" class="mt-8 pt-8 border-t border-gray-200" style="display: none;">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Your Estimated Tax Outcome</h3>
                         <div class="bg-gray-50 p-6 rounded-lg">
-                            <div id="results-breakdown" class="grid grid-cols-2 gap-x-8 gap-y-4"></div>
+                            <div id="results-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 md:gap-y-4"></div>
                         </div>
                         <div id="finalResult" class="md:col-span-2 mt-4 p-6 rounded-lg text-white text-center"></div>
-                        <div class="text-center mt-6 space-x-4">
+                        <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
                            <button id="recalculateBtn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Recalculate</button>
                            <button id="printBtn" class="w-full sm:w-auto bg-gray-600 text-white px-8 py-3 rounded-md hover:bg-gray-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Print Report</button>
                         </div>
@@ -265,12 +265,12 @@
                         let first = true;
                         for (const methodKey in category.methods) {
                             const method = category.methods[methodKey];
-                            radioButtonsHtml += `<div class="${first ? '' : 'border-t border-gray-200 pt-4'}"><label class="flex items-center"><input type="radio" name="${category.name}" value="${methodKey}" class="h-4 w-4 text-indigo-600 border-gray-300" ${first ? 'checked' : ''}><span class="ml-2 text-sm font-medium text-gray-800">${method.label}</span></label><div id="${key}_${methodKey}_inputs" class="mt-2 pl-6 space-y-3">${method.items.map(item => `<div class="flex justify-between items-center"><label class="text-sm text-gray-700">${item}</label><input type="number" data-category-key="${key}" data-method-key="${methodKey}" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="${item.includes('km') || item.includes('hour') ? 'qty' : '$0.00'}" ${!first ? 'disabled' : ''}></div>`).join('')}${method.note ? `<p class="text-xs text-gray-500 mt-2">${method.note}</p>` : ''}</div></div>`;
+                            radioButtonsHtml += `<div class="${first ? '' : 'border-t border-gray-200 pt-4'}"><label class="flex items-center"><input type="radio" name="${category.name}" value="${methodKey}" class="h-4 w-4 text-indigo-600 border-gray-300" ${first ? 'checked' : ''}><span class="ml-2 text-sm font-medium text-gray-800">${method.label}</span></label><div id="${key}_${methodKey}_inputs" class="mt-2 pl-6 space-y-3">${method.items.map(item => `<div class="flex flex-col sm:flex-row justify-between sm:items-center text-left sm:text-right"><label class="text-sm text-gray-700">${item}</label><input type="number" data-category-key="${key}" data-method-key="${methodKey}" step="0.01" class="deduction-input w-full sm:w-28 mt-1 sm:mt-0 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="${item.includes('km') || item.includes('hour') ? 'qty' : '$0.00'}" ${!first ? 'disabled' : ''}></div>`).join('')}${method.note ? `<p class="text-xs text-gray-500 mt-2">${method.note}</p>` : ''}</div></div>`;
                             first = false;
                         }
                         contentHtml = `<div class="space-y-4">${radioButtonsHtml}</div>`;
                     } else {
-                        contentHtml = `<div class="space-y-3">${category.items.map(item => `<div class="flex justify-between items-center"><label class="text-sm text-gray-700">${item}</label><input type="number" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>`).join('')}</div>`;
+                        contentHtml = `<div class="space-y-3">${category.items.map(item => `<div class="flex flex-col sm:flex-row justify-between sm:items-center text-left sm:text-right"><label class="text-sm text-gray-700">${item}</label><input type="number" step="0.01" class="deduction-input w-full sm:w-28 mt-1 sm:mt-0 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00"></div>`).join('')}</div>`;
                     }
                     accordionItem.innerHTML = `<button type="button" class="accordion-button w-full flex justify-between items-center p-3 text-left bg-gray-100 hover:bg-gray-200 focus:outline-none" aria-expanded="true"><div class="flex items-center"><span class="font-medium text-gray-800">${key}: ${category.label}</span><button class="info-button ml-2 text-blue-500 hover:text-blue-700" data-key="${key}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></button></div><svg class="w-5 h-5 text-gray-500 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button><div class="accordion-content p-4 bg-white">${contentHtml}</div>`;
                     accordionContainer.appendChild(accordionItem);
@@ -302,13 +302,14 @@
                 document.getElementById('occupation').addEventListener('change', handleOccupationChange);
                 
                 document.querySelector('nav').addEventListener('click', (e) => {
-                    if (e.target.tagName === 'A') {
+                    const link = e.target.closest('a');
+                    if (link) {
                         e.preventDefault();
-                        const pageId = `page-${e.target.dataset.page}`;
+                        const pageId = `page-${link.dataset.page}`;
                         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                         document.getElementById(pageId).classList.add('active');
                         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                        e.target.classList.add('active');
+                        link.classList.add('active');
                     }
                 });
                 
@@ -394,8 +395,8 @@
                 if(suggestions.length > 0){
                     suggestions.forEach(suggestion => {
                          const div = document.createElement('div');
-                         div.classList.add('flex', 'justify-between', 'items-center');
-                         div.innerHTML = `<label class="text-sm text-gray-700">${suggestion}</label><input type="number" step="0.01" class="deduction-input w-28 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00">`;
+                         div.classList.add('flex', 'flex-col', 'sm:flex-row', 'justify-between', 'sm:items-center');
+                         div.innerHTML = `<label class="text-sm text-gray-700">${suggestion}</label><input type="number" step="0.01" class="deduction-input w-full sm:w-28 mt-1 sm:mt-0 text-right bg-white rounded border border-gray-300 p-1 shadow-sm sm:text-sm" placeholder="$0.00">`;
                         suggestionsContainer.appendChild(div);
                     });
                     suggestionsSection.style.display = 'block';
@@ -414,23 +415,23 @@
                     <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
                         <div class="p-4 border-b flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Business Worksheet</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div>
                         <div class="p-6 overflow-y-auto flex-grow">
-                             <div class="grid grid-cols-2 gap-4 mb-4">
+                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div><label class="block text-sm font-medium">Business Name</label><input type="text" id="biz-name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${biz.name || ''}"></div>
                                 <div><label class="block text-sm font-medium">ABN</label><input type="text" id="biz-abn" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${biz.abn || ''}"></div>
                              </div>
                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                  <div>
                                     <h4 class="font-semibold mb-2">Income</h4>
-                                    <div class="flex justify-between items-center mb-2"><label class="text-sm">Gross Sales</label><input id="biz-income" type="number" class="w-32 text-right p-1 border rounded" value="${biz.income || ''}"></div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2"><label class="text-sm">Gross Sales</label><input id="biz-income" type="number" class="w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" value="${biz.income || ''}"></div>
                                     <h4 class="font-semibold my-2">Cost of Goods Sold</h4>
-                                    <div class="flex justify-between items-center mb-2"><label class="text-sm">Opening Stock</label><input id="biz-os" type="number" class="biz-cogs-input w-32 text-right p-1 border rounded" value="${biz.os || ''}"></div>
-                                    <div class="flex justify-between items-center mb-2"><label class="text-sm">Purchases</label><input id="biz-purchases" type="number" class="biz-cogs-input w-32 text-right p-1 border rounded" value="${biz.purchases || ''}"></div>
-                                    <div class="flex justify-between items-center mb-2"><label class="text-sm">Closing Stock</label><input id="biz-cs" type="number" class="biz-cogs-input w-32 text-right p-1 border rounded" value="${biz.cs || ''}"></div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2"><label class="text-sm">Opening Stock</label><input id="biz-os" type="number" class="biz-cogs-input w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" value="${biz.os || ''}"></div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2"><label class="text-sm">Purchases</label><input id="biz-purchases" type="number" class="biz-cogs-input w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" value="${biz.purchases || ''}"></div>
+                                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2"><label class="text-sm">Closing Stock</label><input id="biz-cs" type="number" class="biz-cogs-input w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" value="${biz.cs || ''}"></div>
                                     <div class="flex justify-between items-center mt-2 pt-2 border-t"><label class="text-sm font-semibold">Gross Trading Income</label><span id="biz-gti" class="font-semibold text-right"></span></div>
                                  </div>
                                  <div>
                                     <h4 class="font-semibold mb-2">Expenses</h4>
-                                    <div class="space-y-2">${businessExpenses.map(exp => `<div class="flex justify-between items-center"><label class="text-sm">${exp}</label><input type="number" class="biz-expense-input w-32 text-right p-1 border rounded" data-expense-name="${exp}" value="${biz.expenseDetails ? (biz.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div>
+                                    <div class="space-y-2">${businessExpenses.map(exp => `<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><label class="text-sm">${exp}</label><input type="number" class="biz-expense-input w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" data-expense-name="${exp}" value="${biz.expenseDetails ? (biz.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div>
                                     <div class="flex justify-between items-center mt-2 pt-2 border-t"><label class="text-sm font-semibold">Total Expenses</label><span id="biz-total-exp" class="font-semibold text-right"></span></div>
                                  </div>
                              </div>
@@ -474,7 +475,7 @@
                 const isEditing = index !== -1;
                 const prop = isEditing ? taxData.schedules.rentalProperties[index] : {};
                 const rentalExpenses = ['Advertising', 'Body corporate fees', 'Borrowing expenses', 'Cleaning', 'Council rates', 'Gardening/Lawn', 'Insurance', 'Interest on loans', 'Land tax', 'Legal fees', 'Pest control', 'Agent fees/commission', 'Repairs and maintenance', 'Stationery & postage', 'Travel expenses', 'Water charges', 'Sundry expenses', 'Capital works', 'Capital allowances'];
-                modal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col"><div class="p-4 border-b flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Rental Property</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div><div class="p-6 overflow-y-auto flex-grow"><label class="block text-sm font-medium">Property Address</label><input type="text" id="rental-address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${prop.address || ''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"><div><h4 class="font-semibold mb-2">Income</h4><div class="flex justify-between items-center mb-2"><label class="text-sm">Gross rent</label><input id="rental-income" type="number" class="w-32 text-right p-1 border rounded" value="${prop.income || ''}"></div></div><div><h4 class="font-semibold mb-2">Expenses</h4><div class="space-y-2">${rentalExpenses.map(exp => `<div class="flex justify-between items-center"><label class="text-sm">${exp}</label><input type="number" class="rental-expense-input w-32 text-right p-1 border rounded" data-expense-name="${exp}" value="${prop.expenseDetails ? (prop.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div></div></div></div><div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-rental-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Property</button></div></div>`;
+                modal.innerHTML = `<div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col"><div class="p-4 border-b flex justify-between items-center"><h3 class="text-xl font-bold text-gray-800">${isEditing ? 'Edit' : 'Add'} Rental Property</h3><button class="modal-close text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button></div><div class="p-6 overflow-y-auto flex-grow"><label class="block text-sm font-medium">Property Address</label><input type="text" id="rental-address" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" value="${prop.address || ''}"><div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"><div><h4 class="font-semibold mb-2">Income</h4><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2"><label class="text-sm">Gross rent</label><input id="rental-income" type="number" class="w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" value="${prop.income || ''}"></div></div><div><h4 class="font-semibold mb-2">Expenses</h4><div class="space-y-2">${rentalExpenses.map(exp => `<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center"><label class="text-sm">${exp}</label><input type="number" class="rental-expense-input w-full sm:w-32 text-right p-1 border rounded mt-1 sm:mt-0" data-expense-name="${exp}" value="${prop.expenseDetails ? (prop.expenseDetails[exp] || '') : ''}"></div>`).join('')}</div></div></div></div><div class="p-4 border-t bg-gray-50 flex justify-end space-x-2"><button class="modal-close bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300">Cancel</button><button id="save-rental-btn" data-index="${index}" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700">Save Property</button></div></div>`;
                 modal.classList.remove('hidden'); modal.classList.add('flex');
                 document.getElementById('save-rental-btn').addEventListener('click', saveRental);
             }

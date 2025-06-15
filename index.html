@@ -279,7 +279,7 @@
                         <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
                            <button id="recalculateBtn" class="w-full sm:w-auto bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Recalculate</button>
                            <button id="printBtn" class="w-full sm:w-auto bg-gray-600 text-white px-8 py-3 rounded-md hover:bg-gray-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Print Report</button>
-                           <button id="emailBtn" class="w-full sm:w-auto bg-teal-600 text-white px-8 py-3 rounded-md hover:bg-teal-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Email Report</button>
+                           <button id="submitReportBtn" class="w-full sm:w-auto bg-teal-600 text-white px-8 py-3 rounded-md hover:bg-teal-700 text-lg font-semibold shadow-md hover:shadow-lg transition-transform transform hover:scale-105">Submit Report</button>
                         </div>
                          <div id="notification-popup" class="fixed bottom-5 right-5 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transform translate-y-2">
                             Notification Message
@@ -301,26 +301,28 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- IMPORTANT: Firebase Configuration ---
-// Replace this with your own Firebase project configuration.
-const firebaseConfig = {
-    apiKey: "AIzaSyB...ABCdeFg...", // Your actual API Key
-    authDomain: "j2k-tax-calculator.firebaseapp.com", // Your actual Auth Domain
-    projectId: "j2k-tax-calculator", // Your actual Project ID
-    storageBucket: "j2k-tax-calculator.appspot.com", // Your actual Storage Bucket
-    messagingSenderId: "123456789012", // Your actual Sender ID
-    appId: "1:123456789012:web:abcdef1234567890" // Your actual App ID
-};
+            const firebaseConfig = {
+              apiKey: "AIzaSyB3M4VE9aUtRg-C0HhhG4yEhzKeHYj_LQ4",
+              authDomain: "j2ktaxcalculator-5d8cf.firebaseapp.com",
+              projectId: "j2ktaxcalculator-5d8cf",
+              storageBucket: "j2ktaxcalculator-5d8cf.appspot.com",
+              messagingSenderId: "361979169440",
+              appId: "1:361979169440:web:ea684863e963ea8a1817c5",
+              measurementId: "G-5XS9LBZEGQ"
+            };
 
-            let auth, storage;
+            let auth, storage, db;
             let userId = null;
 
             function isFirebaseConfigured() {
-                return firebaseConfig.apiKey !== "YOUR_API_KEY" && firebaseConfig.projectId !== "YOUR_PROJECT_ID";
+                // We check for a specific project ID instead of the placeholder
+                return firebaseConfig.projectId === "j2ktaxcalculator-5d8cf";
             }
 
             if (isFirebaseConfigured()) {
@@ -328,6 +330,7 @@ const firebaseConfig = {
                 firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
                 storage = firebase.storage();
+                db = firebase.firestore();
                 
                 // Sign in user anonymously to get a unique ID
                 auth.signInAnonymously().catch((error) => {
@@ -542,7 +545,7 @@ const firebaseConfig = {
                 document.getElementById('calculateBtn').addEventListener('click', calculate);
                 document.getElementById('recalculateBtn').addEventListener('click', calculate);
                 document.getElementById('printBtn').addEventListener('click', printReport);
-                document.getElementById('emailBtn').addEventListener('click', emailReport);
+                document.getElementById('submitReportBtn').addEventListener('click', submitReport);
                 document.getElementById('occupation').addEventListener('change', handleOccupationChange);
 
                  // Verification method change listener
@@ -1052,44 +1055,6 @@ const firebaseConfig = {
                 return `<div style="font-family: 'Inter', sans-serif; padding: 2rem;"><h1 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">Tax Estimate Report</h1>${inputsHtml}${businessHtml}${rentalHtml}${cgtHtml}<h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 2rem;">Calculation Summary</h3><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 2rem;">${resultsHtml}</div><div style="margin-top: 2rem; padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: black; background-color: #f3f4f6;">${finalResultHtml}</div></div>`;
             }
 
-            function getReportTextSummary(data) {
-                const clientName = document.getElementById('clientName').value || 'N/A';
-                const clientEmail = document.getElementById('clientEmail').value || 'N/A';
-                const clientContact = document.getElementById('clientContact').value || 'N/A';
-                const clientTFN = document.getElementById('clientTFN').value || 'N/A';
-                const clientDOB = document.getElementById('clientDOB').value || 'N/A';
-                const verificationMethod = document.getElementById('verificationMethod').options[document.getElementById('verificationMethod').selectedIndex].text;
-                const verificationDocName = taxData.verificationFile ? taxData.verificationFile.name : 'Not provided';
-
-                let body = `Hi Team,\n\nPlease find the tax details for client: ${clientName}.\n\n--- Client Details ---\n`;
-                body += `Name: ${clientName}\n`;
-                body += `Email: ${clientEmail}\n`;
-                body += `Contact: ${clientContact}\n`;
-                body += `TFN: ${clientTFN}\n`;
-                body += `DOB: ${clientDOB}\n`;
-                body += `Verification Method: ${verificationMethod}\n`;
-                body += `Verification Document: ${verificationDocName} (Uploaded to Firebase Storage)\n\n`;
-
-                body += `--- Calculation Summary ---\n`;
-                body += `Total Income: ${formatCurrency(data.totalIncome)}\n`;
-                body += `Total Deductions: ${formatCurrency(data.totalDeductions)}\n`;
-                body += `Taxable Income: ${formatCurrency(data.taxableIncome)}\n`;
-                body += `---------------------------\n`;
-                body += `Net Tax on Income: ${formatCurrency(data.netTax)}\n`;
-                const finalOutcomeText = data.finalOutcome >= 0 
-                    ? `Estimated Refund: ${formatCurrency(data.finalOutcome)}`
-                    : `Estimated Payable: ${formatCurrency(Math.abs(data.finalOutcome))}`;
-                body += `FINAL ESTIMATE: ${finalOutcomeText}\n\n`;
-                body += `--- Uploaded Documents (in Firebase Storage) ---\n`;
-                if(taxData.documents.length > 0) {
-                    taxData.documents.forEach(doc => { body += `- ${doc.name}\n`; });
-                } else {
-                    body += `No documents were uploaded.\n`;
-                }
-                body += `\nThank you.\n`;
-                return body;
-            }
-
             function printReport() {
                  const printArea = document.getElementById('print-area');
                  printArea.innerHTML = getReportHtmlForPrint();
@@ -1111,25 +1076,47 @@ const firebaseConfig = {
                 }, 3000);
             }
 
-            function emailReport() {
+            function saveReportToFirestore(reportData) {
+                if (!isFirebaseConfigured() || !userId || !db) {
+                    console.error("Firebase not configured or user not signed in. Cannot save report.");
+                    showNotification("Could not save report. Connection issue.", "error");
+                    return;
+                }
+
+                const clientDetails = {
+                    name: document.getElementById('clientName').value || 'N/A',
+                    email: document.getElementById('clientEmail').value || 'N/A',
+                    contact: document.getElementById('clientContact').value || 'N/A',
+                    tfn: document.getElementById('clientTFN').value || 'N/A',
+                    dob: document.getElementById('clientDOB').value || 'N/A',
+                };
+                
+                const fullReport = {
+                    clientDetails: clientDetails,
+                    calculation: reportData,
+                    schedules: taxData.schedules,
+                    documents: taxData.documents.map(d => ({name: d.name, path: d.path, size: d.size})), // Don't save the full file object
+                    verificationFile: taxData.verificationFile ? {name: taxData.verificationFile.name, path: taxData.verificationFile.path, size: taxData.verificationFile.size} : null,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                db.collection("users").doc(userId).collection("reports").add(fullReport)
+                    .then((docRef) => {
+                        showNotification("Report successfully submitted!", "success");
+                        console.log("Report saved with ID: ", docRef.id);
+                    })
+                    .catch((error) => {
+                        console.error("Error submitting report: ", error);
+                        showNotification("Error submitting report.", "error");
+                    });
+            }
+
+            function submitReport() {
                 if (!lastCalculationResult) {
                     showNotification("Please calculate the report first.", "error");
                     return;
                 }
-                const email = 'jet@j2kaccounting.com.au';
-                const clientName = document.getElementById('clientName').value || 'Client';
-                const subject = encodeURIComponent(`FY 2025 Details - ${clientName}`);
-                const bodyText = getReportTextSummary(lastCalculationResult);
-                
-                const mailtoLink = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
-                
-                if (mailtoLink.length > 2000) {
-                    showNotification("Report is too long to email directly. Please copy the details manually.", "error");
-                    return;
-                }
-
-                window.location.href = mailtoLink;
-                showNotification("Opening email client...");
+                saveReportToFirestore(lastCalculationResult);
             }
             
             initialize();
